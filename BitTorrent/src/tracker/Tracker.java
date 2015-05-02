@@ -86,9 +86,9 @@ public class Tracker {
 						Tracker.port);
 				BufferedWriter bufferedWriter = new BufferedWriter(
 						new OutputStreamWriter(backupSocket.getOutputStream()));
-				String param = "2" + " " + hashValue + " " + clientIP + " "
-						+ "0";
-				bufferedWriter.write(param);
+				String paramBackUp = "2" + " " + hashValue + " " + clientIP
+						+ " " + "0";
+				bufferedWriter.write(paramBackUp);
 				bufferedWriter.flush();
 			}
 
@@ -119,24 +119,16 @@ public class Tracker {
 						Tracker.port);
 				BufferedWriter bufferedWriter = new BufferedWriter(
 						new OutputStreamWriter(backupSocket.getOutputStream()));
-				String param = "1" + " " + hashValue + " " + clientIP + " 0";
-				bufferedWriter.write(param);
+				String paramBackUp = "1" + " " + hashValue + " " + clientIP
+						+ " 0";
+				bufferedWriter.write(paramBackUp);
 				bufferedWriter.flush();
 			}
 			return success;
 		}
 
 		public void run() {
-			String param[] = null;
-			BufferedReader br;
-			try {
-				br = new BufferedReader(new InputStreamReader(
-						socket.getInputStream()));
-				param = br.readLine().split(" ");
-				function = Integer.parseInt(param[0]);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			// String param[] = null;
 
 			switch (function) {
 			case 1:
