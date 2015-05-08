@@ -84,7 +84,6 @@ public class Tracker {
 			}
 
 			return success;
-
 		}
 
 		private List<String> getClients(String hashValue) {
@@ -101,7 +100,6 @@ public class Tracker {
 				String input = br.readLine();
 				String[] params = input.split(" ");
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			
 			
 				switch (Integer.parseInt(params[0])) {
 				
