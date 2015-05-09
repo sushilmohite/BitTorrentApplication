@@ -308,7 +308,7 @@ public class ClientUI {
 	private void getTorrents() {
 		DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
 		for(int i = 0; i < 20; i++) {
-			Torrent t = new Torrent("file" + (i + 1), 10240, 1024);
+			Torrent t = new Torrent("file" + (i + 1), 102474, 1024);
 			OngoingTorrent ot = new OngoingTorrent(t, "", false);
 			listOfTorrents.add(ot);
 			dataModel.addRow(new String[]{
