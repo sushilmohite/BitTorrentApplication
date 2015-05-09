@@ -5,12 +5,12 @@ public class Torrent {
 	public long fileSize;
 	
 	public int numberOfChunks;
-	public long chunkSize;
+	public int chunkSize;
 	
 	public String hashOfFile;
 	public String[] hashOfChunk;
 	
-	public Torrent(String fileName, long fileSize, long chunkSize) {
+	public Torrent(String fileName, long fileSize, int chunkSize) {
 		this.fileName = fileName;
 		this.fileSize = fileSize;
 		this.chunkSize = chunkSize;

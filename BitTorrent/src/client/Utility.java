@@ -5,6 +5,11 @@ public class Utility {
 	public static final int CLIENT_PORT = 10412;
 	public static final String[] COLUMNS = {"Filename", "Progress", "Size", "# of Peers"};
 
+	// OP codes
+	public static final byte REQUEST = 0x01;
+	
+	public static final int MAX_CHUNK_SIZE = Integer.MAX_VALUE;
+	
 	public static final float KB = 1024;
 	public static final float MB = 1024 * 1024;
 	public static final float GB = 1024 * 1024 * 1024;
@@ -21,9 +26,20 @@ public class Utility {
 	    return new String(hexChars);
 	}
 	
+	public static byte[] hexToBytes(String s) {
+	    int len = s.length();
+	    byte[] data = new byte[len / 2];
+	    for (int i = 0; i < len; i += 2) {
+	        data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+	                             + Character.digit(s.charAt(i+1), 16));
+	    }
+	    return data;
+	}
+	
 	public static void main(String[] args) {
 		System.out.println(KB);
 		System.out.println(MB);
 		System.out.println(GB);
+		System.out.println(REQUEST);
 	}
 }

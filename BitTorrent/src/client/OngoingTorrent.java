@@ -53,4 +53,8 @@ public class OngoingTorrent {
 		return "" + 0;
 	}
 
+	public int getChunkSize() {
+		return torrent.chunkSize;
+	}
+
 }

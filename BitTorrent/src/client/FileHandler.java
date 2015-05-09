@@ -43,13 +43,30 @@ public class FileHandler {
 		return bytes;
 	}
 	
+	public static void writeToFile(String fileName, int startPosition, byte[] bytes) {
+		try {
+			RandomAccessFile raFile = new RandomAccessFile(fileName, "rw");
+			FileChannel fc = raFile.getChannel();
+			
+			ByteBuffer buf = ByteBuffer.wrap(bytes);
+			fc.write(buf, startPosition);
+			
+			raFile.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	public static void main(String[] args) {
 		String fileName = "hello.txt";
-		byte[] bytes = FileHandler.getChunk(fileName, 5, 100);
+		byte[] bytes = FileHandler.getChunk(fileName, 5, 5);
 		System.out.println(Utility.bytesToHex(bytes));
-		for(UIManager.LookAndFeelInfo lf : UIManager.getInstalledLookAndFeels()) {
-			System.out.println(lf);
-		}
+		bytes = Utility.hexToBytes("2e20492061");
+		bytes = Utility.hexToBytes("1313131313");
+		FileHandler.writeToFile(fileName, 200, bytes);
+		bytes = FileHandler.getChunk(fileName, 0, 1000);
+		System.out.println(Utility.bytesToHex(bytes));
 	}
 
 }
