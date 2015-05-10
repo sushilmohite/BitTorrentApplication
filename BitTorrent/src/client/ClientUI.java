@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -430,14 +431,11 @@ public class ClientUI {
 					jd.dispose();
 					jd.setVisible(false);
 					String filenameStr = filename.getText();
-					Torrent t = null;
-					try {
-						t = initUpload(filenameStr, FileHandler.getHash(filenameStr), fileSize, numOfChunks);
-					} catch (IOException e1) {
-						e1.printStackTrace();
+					Torrent t = initUpload(filenameStr, FileHandler.getHash(filenameStr), fileSize, numOfChunks);
+					if(t != null) {
+						OngoingTorrent ot = new OngoingTorrent(t, filenameStr.substring(0, filenameStr.lastIndexOf(".")), true);
+						addTorrent(ot);
 					}
-					OngoingTorrent ot = new OngoingTorrent(t, filenameStr.substring(0, filenameStr.lastIndexOf(".")), true);
-					addTorrent(ot);
 				} else {
 					JOptionPane.showMessageDialog(null, message);
 				}
@@ -452,7 +450,9 @@ public class ClientUI {
 
 	}
 	
-	protected Torrent initUpload(String filenameStr, String hash, long fileSize, int numOfChunks) throws IOException {
+	protected Torrent initUpload(String filenameStr, String hash, long fileSize, int numOfChunks) {
+        String line = null;
+		try {
 		// Call Restful service and get Torrent
 		URL torrentUrl = new URL("http://" + Utility.WEB_SERVICE_IP + ":8080/BitTorrentWebService/webresources/resource?fileName=" + filenameStr + "&fileHash=" + hash + "&fileSize=" + fileSize + "&numberOfChunks=" + numOfChunks);
         
@@ -460,9 +460,13 @@ public class ClientUI {
         connection.setRequestMethod("PUT");
         connection.connect();
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String line;
         line = in.readLine();
         in.close();
+		} catch(ConnectException e) {
+			System.out.println("WebService is down!");
+		} catch (IOException e) {
+			
+		}
         if(line != null) {
         	return Torrent.decode(line);
         } else {
