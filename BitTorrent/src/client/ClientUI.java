@@ -434,10 +434,10 @@ public class ClientUI {
 					try {
 						t = initUpload(filenameStr, FileHandler.getHash(filenameStr), fileSize, numOfChunks);
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 					OngoingTorrent ot = new OngoingTorrent(t, filenameStr.substring(0, filenameStr.lastIndexOf(".")), true);
+					addTorrent(ot);
 				} else {
 					JOptionPane.showMessageDialog(null, message);
 				}
@@ -461,15 +461,13 @@ public class ClientUI {
         connection.connect();
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String line;
-        StringBuffer stringBuffer = new StringBuffer();
-
-        while ((line = in.readLine()) != null) {
-            stringBuffer.append(line);
-            stringBuffer.append("\n");
-        }
+        line = in.readLine();
         in.close();
-		
-		return null;
+        if(line != null) {
+        	return Torrent.decode(line);
+        } else {
+        	return null;
+        }
 	}
 
 	private JScrollPane getDetailsTableView(OngoingTorrent ot) {
@@ -677,7 +675,7 @@ public class ClientUI {
 		});
 	}
 
-	public void updateUI(final String filename, String sender) {
+	public void updateUI(final String filename, final String sender) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				OngoingTorrent ot = null;
@@ -699,13 +697,13 @@ public class ClientUI {
 	                jFrame.repaint();
 	
 	                updateDetailsAndConnectionView(ot);
+	        		downloadNextChunk(ot, sender);
 				}
 			}
 		});
         
-        // TODO: Send request to download next chunk
 	}
-	
+
 	public void updateDetailsAndConnectionView(final OngoingTorrent ot) {
 		if(table.getSelectedRow() == listOfTorrents.indexOf(ot)) {
 			SwingUtilities.invokeLater(new Runnable() {
@@ -804,7 +802,12 @@ public class ClientUI {
 	}
 
 	private void startDownload(OngoingTorrent ot) {
-		// TODO Start downloading
+		// TODO: Connect to tracker and extract otherClient IPs
+		
+	}
+	
+	protected void downloadNextChunk(OngoingTorrent ot, String sender) {
+		// TODO: Download next chunk
 		
 	}
 
