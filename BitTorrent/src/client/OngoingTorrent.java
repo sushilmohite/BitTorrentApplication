@@ -1,12 +1,8 @@
 package client;
 
-import java.util.HashSet;
-
 public class OngoingTorrent {
 
 	Torrent torrent;
-//	private boolean[] chunkDownloaded;
-	private HashSet<Integer> chunksRemaining;
 	private String location;
 	private boolean completed;
 	private String[] otherClients;
@@ -16,11 +12,9 @@ public class OngoingTorrent {
 		this.torrent = t;
 		this.location = location;
 		this.completed = completed;
-		this.chunksRemaining = new HashSet<Integer>();
 		this.chunkStatus = new int[torrent.getNumberOfChunks()];
 		if(!completed) {
 			for(int i = 0; i < torrent.getNumberOfChunks(); i++) {
-				chunksRemaining.add(i);
 				chunkStatus[i] = -1;
 			}
 		}
@@ -52,7 +46,12 @@ public class OngoingTorrent {
 
 	public String getProgress() {
 		float total = torrent.getNumberOfChunks();
-		float done = total - chunksRemaining.size();
+		float done = 0;
+		for(int i = 0; i < chunkStatus.length; i++) {
+			if(chunkStatus[i] != -1) {
+				done++;
+			}
+		}
 		return String.format("%.2f", done/total) + " %";
 	}
 

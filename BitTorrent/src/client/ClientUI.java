@@ -403,9 +403,8 @@ public class ClientUI {
 //			chunk.setMaximumSize(chunk.getPreferredSize());
 //			chunk.setPreferredSize(chunk.getPreferredSize());
 			if(client == null) {
-				Random r = new Random();
-//				if(ot.isChunkDownloaded(i)) {
-				if(i % 100 == 0) {
+				if(ot.isChunkDownloaded(i)) {
+//				if(i % 100 == 0) {
 					chunk.setBackground(Color.BLACK);
 				} else {
 					chunk.setBackground(Color.WHITE);
@@ -436,7 +435,6 @@ public class ClientUI {
 				main.remove(connectionsView);
 
 				detailsView = getDetailsTableView(ot);
-//				detailsView = getDetailsView(ot);
 				connectionsView = getConnectionsView(ot);
 
 				main.add(detailsView, detailsConstraints);
@@ -448,6 +446,26 @@ public class ClientUI {
 		});
 	}
 
+	public void updateConnectionsView(final OngoingTorrent ot) {
+		if(table.getSelectedRow() == listOfTorrents.indexOf(ot)) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					GridBagLayout layout = (GridBagLayout) main.getLayout();
+					GridBagConstraints connectionsConstraints = layout.getConstraints(connectionsView);
+					
+					main.remove(connectionsView);
+	
+					connectionsView = getConnectionsView(ot);
+	
+					main.add(connectionsView, connectionsConstraints);
+					
+	                jFrame.validate();
+	                jFrame.repaint();
+				}
+			});
+		}
+	}
+	
 	private void getTorrents() {
 		DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
 		for(int i = 0; i < 20; i++) {
@@ -514,6 +532,7 @@ public class ClientUI {
 		final OngoingTorrent ot = new OngoingTorrent(t, "", false);
 		
 		c.addTorrent(ot);
+		c.updateConnectionsView(ot);
 	}
 
 }
