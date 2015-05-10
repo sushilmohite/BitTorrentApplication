@@ -63,6 +63,8 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
 
+import BitTorrentWebService.Torrent;
+
 public class ClientUI {
 
 	private JFrame jFrame;

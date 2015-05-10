@@ -4,6 +4,8 @@ import java.io.File;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
+import BitTorrentWebService.Torrent;
+
 public class ClientModel {
 	
 	private OngoingTorrent ot;
