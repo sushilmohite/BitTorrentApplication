@@ -13,17 +13,25 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Random;
 import java.util.Scanner;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -35,6 +43,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
 
@@ -116,7 +125,7 @@ public class ClientUI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO: on clicking download
+				createDownload();
 			}
 
 		});
@@ -128,7 +137,7 @@ public class ClientUI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO: on clicking upload
+				createUpload();
 			}
 
 		});
@@ -167,7 +176,6 @@ public class ClientUI {
 
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
-				//TODO: On selecting a torrent
 				if(!event.getValueIsAdjusting()) {
 					ListSelectionModel index = (ListSelectionModel) event.getSource();
 					
@@ -176,26 +184,6 @@ public class ClientUI {
 				}
 			}
 		});
-		/*
-		scrollPane = table.createScrollPaneForTable( table );
-		topPanel.add( scrollPane, BorderLayout.CENTER );*/
-		/*final JList<OngoingTorrent> listOfTorrents = new JList<>(listModel);
-		listOfTorrents.setCellRenderer(new CustomCellRenderer());
-		listOfTorrents.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent event) {
-				//TODO: On selecting a torrent
-				Email email = listOfEmails.getSelectedValue();
-				if(email != null) {
-					if(!email.isSeen()) {
-						email.setSeen(true);
-						clientReceiver.updateSeenStatus(email.getId());
-					}
-					setContent("" + email.getHTMLContent());
-					setReceiver(email.getFrom());
-					setSubject(email.getSubject());
-				}
-			}
-		});*/
 		
 		// Add the table to a scrolling pane
 		listPane.setViewportView(table);
@@ -241,6 +229,61 @@ public class ClientUI {
 		return main;
 	}
 
+	protected void createDownload() {
+		JFileChooser jfc = new JFileChooser();
+		jfc.setAcceptAllFileFilterUsed(false);
+		jfc.addChoosableFileFilter(new FileFilter() {
+
+			@Override
+			public String getDescription() {
+				return "Torrent Files (*.torrent)";
+			}
+
+			@Override
+			public boolean accept(File f) {
+				if (f.isDirectory()) {
+					return true;
+				}
+				if (f.getName().endsWith(".torrent")) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		});
+		jfc.showOpenDialog(null);
+		
+		File torrentFile = jfc.getSelectedFile();
+		
+		Torrent t = null;
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(torrentFile));
+			t = (Torrent) ois.readObject();
+			ois.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (StreamCorruptedException e) {
+			JOptionPane.showMessageDialog(null, "Invalid file! Please use proper *.torrent file");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		if(t != null) {
+			OngoingTorrent ot = new OngoingTorrent(t, "", false);
+			addTorrent(ot);
+			
+			// TODO: start downloading
+		}
+	}
+
+	protected void createUpload() {
+		
+		
+		// TODO: Call Restful service
+	}
+	
 	private JScrollPane getDetailsTableView(OngoingTorrent ot) {
 		Border border = BorderFactory.createEtchedBorder();
 		JScrollPane listPane = new JScrollPane();

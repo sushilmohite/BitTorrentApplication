@@ -1,5 +1,7 @@
 package client;
 
+import java.io.File;
+
 public class OngoingTorrent {
 
 	Torrent torrent;
@@ -42,6 +44,10 @@ public class OngoingTorrent {
 
 	public String getFileName() {
 		return torrent.getFileName();
+	}
+	
+	public String getAbsoluteFileName() {
+		return location + File.separatorChar + getFileName();
 	}
 
 	public String getProgress() {
