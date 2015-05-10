@@ -440,7 +440,7 @@ public class ClientUI {
 
 	}
 	
-	protected Torrent initUpload(String filenameStr, String string, long fileSize, int numOfChunks) {
+	protected Torrent initUpload(String filenameStr, String hash, long fileSize, int numOfChunks) {
 		// TODO: Call Restful service and get Torrent
 		
 		return null;
