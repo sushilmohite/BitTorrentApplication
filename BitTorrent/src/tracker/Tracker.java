@@ -2,6 +2,7 @@ package tracker;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -99,16 +100,16 @@ public class Tracker {
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				String input = br.readLine();
 				String[] params = input.split(" ");
-				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			
 				switch (Integer.parseInt(params[0])) {
 				
 				case 1:
-					out.println(addClient(params[1], params[2], Boolean.parseBoolean(params[3])));
+					out.writeObject(addClient(params[1], params[2], Boolean.parseBoolean(params[3])));
 					break;
 				
 				case 2:
-					out.println(getClients(params[1]));
+					out.writeObject(getClients(params[1]));
 					break;
 			
 				default:

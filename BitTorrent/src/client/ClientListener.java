@@ -12,8 +12,12 @@ public class ClientListener extends Thread {
 	DatagramSocket socket;
 	ClientUI clientUI;
 	
-	public ClientListener(ClientUI clientUI) throws SocketException {
-		this.socket = new DatagramSocket(Utility.CLIENT_PORT);
+	public ClientListener(ClientUI clientUI) {
+		try {
+			this.socket = new DatagramSocket(Utility.CLIENT_PORT);
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
 		this.clientUI = clientUI;
 	}
 	
