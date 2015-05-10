@@ -29,8 +29,9 @@ public class ClientListener extends Thread {
 		
 		while (true) {
 			try {
+				System.out.println("ClientListener: Waiting..");
 				socket.receive(dataPacket);
-				new HandlePacket(dataPacket).start();
+				(new HandlePacket(dataPacket)).run();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -42,11 +43,12 @@ public class ClientListener extends Thread {
 		DatagramPacket dataPacket;
 		
 		public HandlePacket(DatagramPacket dataPacket) {
+			System.out.println("ClientListener: Creating PacketHandler.." + dataPacket.getData());
 			this.dataPacket = dataPacket;
 		}
 		
 		public void run() {
-			System.out.println("ClientListener: " + dataPacket.getData());
+			System.out.println("ClientListener: " + Arrays.toString(Arrays.copyOfRange(dataPacket.getData(), 0 , dataPacket.getLength())));
 			switch(this.dataPacket.getData()[0]) {
 			
 			case 1:
@@ -68,11 +70,13 @@ public class ClientListener extends Thread {
 		}
 		
 		private void sendData() throws IOException {
-			int chunkNumber = Integer.parseInt(new String(dataPacket.getData(), 1, 4));
-			int chunkSize = Integer.parseInt(new String(dataPacket.getData(), 5, 4));
-			int fileNameSize = Integer.parseInt(new String(dataPacket.getData(), 9, 4));
+			int chunkNumber = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 1, 5));
+			int chunkSize = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 5, 9));
+			int fileNameSize = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 9, 13));
+			System.out.println(chunkNumber + " " + chunkSize + " " + fileNameSize);
 			String fileName = new String(dataPacket.getData(), 13, fileNameSize);
 			int startPosition = chunkNumber * chunkSize;
+			System.out.println(chunkNumber + " " + chunkSize + " " + fileName + " " + startPosition);
 			byte[] data = FileHandler.getChunk(fileName, startPosition, chunkSize);
 			
 			// Create upload packet
