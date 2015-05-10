@@ -22,9 +22,6 @@ public class OngoingTorrent implements Serializable {
 				chunkStatus[i] = -1;
 			}
 		}
-		// Get clients from tracker
-		otherClients = new String[] {"127.0.0.1"};
-		otherClients = getConnectedClients();
 	}
 	
 	public int getNumOfChunks() {
@@ -72,7 +69,7 @@ public class OngoingTorrent implements Serializable {
 				done++;
 			}
 		}
-		return String.format("%.2f", done/total) + " %";
+		return String.format("%.2f", 100*done/total) + " %";
 	}
 
 	public String getFileSize() {

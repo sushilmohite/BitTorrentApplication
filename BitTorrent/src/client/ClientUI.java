@@ -356,7 +356,7 @@ public class ClientUI {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser jfc = new JFileChooser();
+				JFileChooser jfc = new JFileChooser(new File(System.getProperty("user.dir")));
 				jfc.setAcceptAllFileFilterUsed(true);
 				jfc.showOpenDialog(null);
 				
@@ -435,6 +435,8 @@ public class ClientUI {
 					jd.dispose();
 					jd.setVisible(false);
 					String filenameStr = filename.getText();
+
+					filenameStr = filenameStr.substring(filenameStr.lastIndexOf(File.separatorChar) + 1, filenameStr.length());
 					Torrent t = initUpload(filenameStr, FileHandler.getHash(filenameStr), fileSize, numOfChunks);
 					if(t != null) {
 //						OngoingTorrent ot = new OngoingTorrent(t, filenameStr.substring(0, filenameStr.lastIndexOf(".")), true);
@@ -459,13 +461,17 @@ public class ClientUI {
         String line = null;
 		try {
 			// Call Restful service and get Torrent
-			URL torrentUrl = new URL("http://" + Utility.WEB_SERVICE_IP + ":8080/BitTorrentWebService/webresources/resource?clientIP=" + InetAddress.getLocalHost().getHostAddress() + "&fileName=" + filenameStr + "&fileHash=" + hash + "&fileSize=" + fileSize + "&numberOfChunks=" + numOfChunks);
+			System.out.println("Sending file details to web service");
+			String url = "http://" + Utility.WEB_SERVICE_IP + ":8080/BitTorrentWebService/webresources/resource?clientIP=" + InetAddress.getLocalHost().getHostAddress() + "&fileName=" + filenameStr + "&fileHash=" + hash + "&fileSize=" + fileSize + "&numberOfChunks=" + numOfChunks;
+			System.out.println(url);
+			URL torrentUrl = new URL(url);
         
 			HttpURLConnection connection = (HttpURLConnection) torrentUrl.openConnection();
 			connection.setRequestMethod("PUT");
 			connection.connect();
 			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			line = in.readLine();
+			System.out.println("Received response: " + line);
 			in.close();
 		} catch(ConnectException e) {
 			System.out.println("WebService is down!");
@@ -473,8 +479,10 @@ public class ClientUI {
 		}
 		
         if(line != null) {
+        	System.out.println("Got the torrent file");
         	return Torrent.decode(line);
         } else {
+        	System.out.println("Could not connect to webservice");
         	return null;
         }
 	}

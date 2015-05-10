@@ -6,7 +6,7 @@ public class Utility {
 	
 	public static final int TRACKER_PORT = 1818;
 	
-	public static final String WEB_SERVICE_IP = "localhost";
+	public static final String WEB_SERVICE_IP = "192.168.100.113";
 	
 	public static final String[] COLUMNS = {"Filename", "Progress", "Size", "# of Peers"};
 
