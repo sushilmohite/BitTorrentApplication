@@ -2,16 +2,24 @@ package client;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Random;
+import java.util.Scanner;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,7 +27,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -34,6 +44,10 @@ public class ClientUI {
 	private ArrayList<OngoingTorrent> listOfTorrents;
 	private JTable table;
 	private String clientName;
+	
+	private JPanel main;
+	private JScrollPane detailsView;
+	private JScrollPane connectionsView;
 	
 	public ClientUI(String clientName) {
 		setUIFont();
@@ -62,7 +76,7 @@ public class ClientUI {
 
 		}
 
-		JPanel main = new JPanel();
+		main = new JPanel();
 		main.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
 		Border border = BorderFactory.createEtchedBorder();
@@ -198,111 +212,240 @@ public class ClientUI {
 
 		main.add(listPane, constraints);
 		
-		JPanel detailsView = new JPanel();
-		detailsView.setLayout(new GridBagLayout());
-		detailsView.setBorder(BorderFactory.createTitledBorder(border, "Details"));
-		detailsView.setMinimumSize(detailsView.getPreferredSize());
-		detailsView.setMaximumSize(detailsView.getPreferredSize());
-		detailsView.setPreferredSize(detailsView.getPreferredSize());
+		// Add details view
+		detailsView = getDetailsView(null);
 		constraints.gridx = 0;
 		constraints.gridy = 3;
 		constraints.gridwidth = 1;
 		constraints.gridheight = GridBagConstraints.REMAINDER;
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.NORTHWEST;
-		constraints.weightx = 1;
+		constraints.weightx = 20;
 		constraints.weighty = 55;
 
 		main.add(detailsView, constraints);
-
-		/*
-		// Add From line
-		receiverlbl = new JLabel(FROM_STR);
-		receiverlbl.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-		receiverlbl.setBackground(Color.GREEN);
-		receiverlbl.setPreferredSize(new Dimension(80, 20));
-		receiverlbl.setMinimumSize(receiverlbl.getPreferredSize());
-		receiverlbl.setMaximumSize(receiverlbl.getPreferredSize());
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.NORTHWEST;
-		constraints.weightx = 5;
-		constraints.weighty = 2;
-		detailsView.add(receiverlbl, constraints);
-
-		receiver = new JLabel("");
-		receiver.setPreferredSize(new Dimension(400, 20));
-		receiver.setMinimumSize(receiver.getPreferredSize());
-		receiver.setMaximumSize(receiver.getPreferredSize());
-		receiver.setBackground(Color.GREEN);
+		
+		// Add connections view
+		connectionsView = getConnectionsView(null);
 		constraints.gridx = 1;
-		constraints.gridy = 0;
-		constraints.gridwidth = GridBagConstraints.REMAINDER;
-		constraints.gridheight = 1;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.NORTHWEST;
-		constraints.weightx = 95;
-		constraints.weighty = 2;
-		detailsView.add(receiver, constraints);
-
-		// Add Subject line
-		subjectlbl = new JLabel(SUBJECT_STR);
-		subjectlbl.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-		subjectlbl.setBackground(Color.RED);
-		subjectlbl.setPreferredSize(new Dimension(80, 20));
-		subjectlbl.setMinimumSize(subjectlbl.getPreferredSize());
-		subjectlbl.setMaximumSize(subjectlbl.getPreferredSize());
-		constraints.gridx = 0;
-		constraints.gridy = 1;
+		constraints.gridy = 3;
 		constraints.gridwidth = 1;
-		constraints.gridheight = 1;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.NORTHWEST;
-		constraints.weightx = 5;
-		constraints.weighty = 2;
-		detailsView.add(subjectlbl, constraints);
-
-		subject = new JLabel("");
-		subject.setPreferredSize(new Dimension(400, 20));
-		subject.setMinimumSize(subject.getPreferredSize());
-		subject.setMaximumSize(subject.getPreferredSize());
-		subject.setBackground(Color.RED);
-		constraints.gridx = 1;
-		constraints.gridy = 1;
-		constraints.gridwidth = GridBagConstraints.REMAINDER;
-		constraints.gridheight = 1;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.NORTHWEST;
-		constraints.weightx = 95;
-		constraints.weighty = 2;
-		detailsView.add(subject, constraints);		
-
-		// Add content
-		content = new JLabel();
-		content.setHorizontalAlignment(SwingConstants.LEFT);
-		content.setVerticalAlignment(SwingConstants.TOP);
-		content.setPreferredSize(content.getPreferredSize());
-		content.setMinimumSize(content.getPreferredSize());
-		content.setMaximumSize(content.getPreferredSize());
-		constraints.gridx = 0;
-		constraints.gridy = 2;
+		constraints.gridheight = GridBagConstraints.REMAINDER;
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.NORTHWEST;
-		//		constraints.weightx = 90;
-		constraints.weighty = 96;
-		JScrollPane contentPane = new JScrollPane();
-		contentPane.setViewportView(content);
-		detailsView.add(contentPane, constraints);
-*/
+		constraints.weightx = 80;
+		constraints.weighty = 55;
+
+		main.add(connectionsView, constraints);
+		
 		return main;
 	}
 
+	private JScrollPane getDetailsTableView(OngoingTorrent ot) {
+		Border border = BorderFactory.createEtchedBorder();
+		JScrollPane listPane = new JScrollPane();
+
+		listPane.setBorder(BorderFactory.createTitledBorder(border, "Details"));
+		listPane.setMinimumSize(listPane.getPreferredSize());
+		listPane.setMaximumSize(listPane.getPreferredSize());
+		listPane.setPreferredSize(listPane.getPreferredSize());
+		
+		JPanel detailsView = new JPanel();
+		detailsView.setLayout(new GridLayout(0, 1));
+		detailsView.setMinimumSize(detailsView.getPreferredSize());
+		detailsView.setMaximumSize(detailsView.getPreferredSize());
+		detailsView.setPreferredSize(detailsView.getPreferredSize());
+		
+		DefaultTableModel dataModel = new DefaultTableModel(new String[] {"Attribute", "Value"}, 0);
+		if(ot != null) {
+			dataModel.addRow(new String[] {"FileName", ot.getFileName()});
+			dataModel.addRow(new String[] {"Size", ot.getFileSize()});
+			dataModel.addRow(new String[] {"Progress", ot.getProgress()});
+			dataModel.addRow(new String[] {"# of Peers", ot.getNumOfConnectedPeers()});
+
+//			String[] trackerIps = ot.torrent.getTrackerIP();
+			String[] trackerIps = new String[] {"2", "5", "7", "8"};
+			dataModel.addRow(new String[] {"Tracker IP(s)", trackerIps[0]});
+			for(int i = 1; i < trackerIps.length; i++) {
+				dataModel.addRow(new String[] {"", trackerIps[i]});
+			}
+
+			dataModel.addRow(new String[] {"# of Chunks", "" + ot.torrent.getNumberOfChunks()});
+
+			dataModel.addRow(new String[] {"Chunk size", "" + ot.torrent.getChunkSize()});
+		}
+		
+		JTable table = new JTable(dataModel);
+
+		// Configure some of JTable's paramters
+		table.setShowHorizontalLines(false);
+		table.setRowSelectionAllowed(false);
+		table.setColumnSelectionAllowed(false);
+//		table.setBackground(jFrame.getBackground());
+		table.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		table.getColumnModel().getColumn(0).setPreferredWidth(40);
+		table.getColumnModel().getColumn(1).setPreferredWidth(60);
+		table.setRowHeight((int)(table.getRowHeight() * 1.5));
+		table.setFont(new Font(Font.SERIF, 0, table.getFont().getSize() + 2));
+		
+		detailsView.add(table);
+		
+		listPane.setViewportView(table);
+		return listPane;
+	}
 	
-	protected void torrentSelected(OngoingTorrent ot) {
-		System.out.println(ot);
+	private JScrollPane getDetailsView(OngoingTorrent ot) {
+		Border border = BorderFactory.createEtchedBorder();
+		JScrollPane listPane = new JScrollPane();
+
+		listPane.setBorder(BorderFactory.createTitledBorder(border, "Details"));
+		listPane.setMinimumSize(listPane.getPreferredSize());
+		listPane.setMaximumSize(listPane.getPreferredSize());
+		listPane.setPreferredSize(listPane.getPreferredSize());
+		
+		JPanel detailsView = new JPanel();
+		detailsView.setLayout(new GridLayout(0, 2));
+		detailsView.setMinimumSize(detailsView.getPreferredSize());
+		detailsView.setMaximumSize(detailsView.getPreferredSize());
+		detailsView.setPreferredSize(detailsView.getPreferredSize());
+		detailsView.setFont(new Font(Font.SERIF, 0, detailsView.getFont().getSize() + 2));
+		
+		if(ot != null) {
+			detailsView.add(new JLabel("Filename"));
+			detailsView.add(new JLabel(ot.getFileName()));
+			
+			detailsView.add(new JLabel("Size"));
+			detailsView.add(new JLabel(ot.getFileSize()));
+			
+			detailsView.add(new JLabel("Progress"));
+			detailsView.add(new JLabel(ot.getProgress()));
+			
+			detailsView.add(new JLabel("# of Peers"));
+			detailsView.add(new JLabel(ot.getNumOfConnectedPeers()));
+			
+			detailsView.add(new JLabel("Tracker IP(s)"));
+//			String[] trackerIps = ot.torrent.getTrackerIP();
+			String[] trackerIps = new String[] {"2", "5", "7", "8"};
+			detailsView.add(new JLabel(trackerIps[0]));
+			for(int i = 1; i < trackerIps.length; i++) {
+				detailsView.add(new JLabel(""));
+				detailsView.add(new JLabel(trackerIps[i]));
+			}
+			
+			detailsView.add(new JLabel("# of Chunks"));
+			detailsView.add(new JLabel("" + ot.torrent.getNumberOfChunks()));
+			
+			detailsView.add(new JLabel("Chunk size"));
+			detailsView.add(new JLabel("" + ot.torrent.getChunkSize()));
+			
+		}
+		listPane.setViewportView(detailsView);
+		return listPane;
+	}
+	
+	private JScrollPane getConnectionsView(OngoingTorrent ot) {
+		Border border = BorderFactory.createEtchedBorder();
+		JScrollPane listPane = new JScrollPane();
+
+		listPane.setBorder(BorderFactory.createTitledBorder(border, "Connections"));
+		listPane.setMinimumSize(listPane.getPreferredSize());
+		listPane.setMaximumSize(listPane.getPreferredSize());
+		listPane.setPreferredSize(listPane.getPreferredSize());
+		
+		JPanel connectionsView = new JPanel();
+
+		connectionsView.setLayout(new BoxLayout(connectionsView, BoxLayout.Y_AXIS));
+		connectionsView.setMinimumSize(connectionsView.getPreferredSize());
+		connectionsView.setMaximumSize(connectionsView.getPreferredSize());
+		connectionsView.setPreferredSize(connectionsView.getPreferredSize());
+		connectionsView.setAlignmentX(Component.LEFT_ALIGNMENT);
+		connectionsView.setAlignmentY(Component.LEFT_ALIGNMENT);
+		if(ot != null) {
+			JPanel myStatus = getChunkStatus(ot, null);
+			connectionsView.add(myStatus);
+			String[] otherClients = ot.getConnectedClients();
+			for(int i = 0; i < otherClients.length; i++) {
+				JPanel clientStatus = getChunkStatus(ot, otherClients[i]);
+				connectionsView.add(clientStatus);
+			}
+		}
+		
+		listPane.setViewportView(connectionsView);
+		return listPane;
+	}
+	
+	private JPanel getChunkStatus(OngoingTorrent ot, String client) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		
+		JLabel dummyLabel = new JLabel("XXXXXXXXXXXXXXXXXX");
+		JLabel name;
+		if(client == null) {
+			name = new JLabel("My Status: ");
+		} else {
+			name = new JLabel(client + ": ");
+		}
+		name.setMinimumSize(dummyLabel.getPreferredSize());
+		name.setMaximumSize(dummyLabel.getPreferredSize());
+		name.setPreferredSize(dummyLabel.getPreferredSize());
+		
+		panel.add(name);
+		
+		JPanel chunks = new JPanel(new FlowLayout());
+		Dimension d = new Dimension((int)dummyLabel.getPreferredSize().getWidth() * 5, (int)dummyLabel.getPreferredSize().getHeight() * 2);
+		chunks.setMinimumSize(d);
+		chunks.setMaximumSize(d);
+		chunks.setPreferredSize(d);
+		for(int i = 0; i < ot.torrent.getNumberOfChunks(); i++) {
+			JPanel chunk = new JPanel();
+//			chunk.setMinimumSize(chunk.getPreferredSize());
+//			chunk.setMaximumSize(chunk.getPreferredSize());
+//			chunk.setPreferredSize(chunk.getPreferredSize());
+			if(client == null) {
+				Random r = new Random();
+//				if(ot.isChunkDownloaded(i)) {
+				if(i % 100 == 0) {
+					chunk.setBackground(Color.BLACK);
+				} else {
+					chunk.setBackground(Color.WHITE);
+				}
+			} else {
+				if(client.equals(ot.getChunkStatus(i))) {
+					chunk.setBackground(Color.BLACK);
+				} else {
+					chunk.setBackground(Color.WHITE);
+				}
+			}
+			chunks.add(chunk);
+		}
+		panel.add(chunks);
+
+		
+		return panel;
+	}
+	
+	protected void torrentSelected(final OngoingTorrent ot) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				GridBagLayout layout = (GridBagLayout) main.getLayout();
+				GridBagConstraints detailsConstraints = layout.getConstraints(detailsView);
+				GridBagConstraints connectionsConstraints = layout.getConstraints(connectionsView);
+				
+				main.remove(detailsView);
+				main.remove(connectionsView);
+
+				detailsView = getDetailsTableView(ot);
+//				detailsView = getDetailsView(ot);
+				connectionsView = getConnectionsView(ot);
+
+				main.add(detailsView, detailsConstraints);
+				main.add(connectionsView, connectionsConstraints);
+				
+                jFrame.validate();
+                jFrame.repaint();
+			}
+		});
 	}
 
 	private void getTorrents() {
@@ -319,6 +462,35 @@ public class ClientUI {
 			});
 		}
 	}
+	
+	public void addTorrent(final OngoingTorrent ot) {
+		DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
+		int index = listOfTorrents.size();
+		listOfTorrents.add(ot);
+		dataModel.addRow(new String[]{
+				ot.getFileName(),
+				ot.getProgress(),
+				ot.getFileSize(),
+				ot.getNumOfConnectedPeers()
+		});
+		selectRow(index);
+	}
+	
+	public void selectRow(int index) {
+		table.setRowSelectionInterval(index, index);
+		
+        if (!(table.getParent() instanceof JViewport)) {
+            return;
+        }
+        JViewport viewport = (JViewport)table.getParent();
+
+        Rectangle rect = table.getCellRect(index, 0, true);
+
+        Point pt = viewport.getViewPosition();
+        rect.setLocation(rect.x-pt.x, rect.y-pt.y);
+
+        table.scrollRectToVisible(rect);
+    }
 
     public static void setUIFont() {
     	FontUIResource f = new FontUIResource(new Font(Font.SERIF, 0, 20));
@@ -335,7 +507,13 @@ public class ClientUI {
     }
 
 	public static void main(String[] args) {
-		new ClientUI(args[0]);
+		ClientUI c = new ClientUI(args[0]);
+		Scanner sc = new Scanner(System.in);
+		sc.next();
+		Torrent t = new Torrent("New file", 102474, 10249);
+		final OngoingTorrent ot = new OngoingTorrent(t, "", false);
+		
+		c.addTorrent(ot);
 	}
 
 }

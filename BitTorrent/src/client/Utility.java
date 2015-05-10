@@ -13,6 +13,8 @@ public class Utility {
 	public static final float KB = 1024;
 	public static final float MB = 1024 * 1024;
 	public static final float GB = 1024 * 1024 * 1024;
+
+	public static final String HASH_ALGORITHM = "SHA-1";
 	
 	private static final char[] hexArray = "0123456789abcdef".toCharArray();
 	

@@ -16,10 +16,10 @@ public class ClientModel {
 	private void acceptConnections() {
 		try {
 			DatagramSocket serverSocket = new DatagramSocket(Utility.CLIENT_PORT);
-            byte[] receiveData = new byte[ot.getChunkSize()];
+			byte[] receiveData = new byte[ot.getChunkSize()];
 			while (true) {
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                serverSocket.receive(receivePacket);
+				serverSocket.receive(receivePacket);
 				new RequestHandler(receivePacket).start();
 			}
 		} catch (Exception e) {
@@ -53,6 +53,17 @@ public class ClientModel {
 			receivedBytes = packet.getData();
 			senderIp = packet.getAddress().getHostAddress();
 			System.out.println(senderIp);
+		}
+		
+		@Override
+		public void run() {
+			byte opcode = receivedBytes[0];
+			
+			switch(opcode) {
+				case Utility.REQUEST: {
+					
+				}
+			}
 		}
 
 	}

@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-
-import javax.swing.UIManager;
 
 public class FileHandler {
 
@@ -58,6 +61,40 @@ public class FileHandler {
 			e.printStackTrace();
 		}
 	}
+	
+	public static String getHash(String fileName) {
+		String digest = null;
+		try {
+			Path path = Paths.get(fileName);
+			byte[] fileBytes;
+			fileBytes = Files.readAllBytes(path);
+			MessageDigest cript = null;
+			cript = MessageDigest.getInstance(Utility.HASH_ALGORITHM);
+	        cript.reset();
+	        cript.update(fileBytes);
+	        digest = Utility.bytesToHex(cript.digest());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+        return digest;
+	}
+	
+	public static String getHash(byte[] bytes) {
+		String digest = null;
+		try {
+			MessageDigest cript = null;
+			cript = MessageDigest.getInstance(Utility.HASH_ALGORITHM);
+	        cript.reset();
+	        cript.update(bytes);
+	        digest = Utility.bytesToHex(cript.digest());
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+        return digest;
+	}
+	
 	public static void main(String[] args) {
 		String fileName = "hello.txt";
 		byte[] bytes = FileHandler.getChunk(fileName, 5, 5);
