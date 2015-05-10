@@ -456,20 +456,20 @@ public class ClientUI {
 	protected Torrent initUpload(String filenameStr, String hash, long fileSize, int numOfChunks) {
         String line = null;
 		try {
-		// Call Restful service and get Torrent
-		URL torrentUrl = new URL("http://" + Utility.WEB_SERVICE_IP + ":8080/BitTorrentWebService/webresources/resource?fileName=" + filenameStr + "&fileHash=" + hash + "&fileSize=" + fileSize + "&numberOfChunks=" + numOfChunks);
+			// Call Restful service and get Torrent
+			URL torrentUrl = new URL("http://" + Utility.WEB_SERVICE_IP + ":8080/BitTorrentWebService/webresources/resource?fileName=" + filenameStr + "&fileHash=" + hash + "&fileSize=" + fileSize + "&numberOfChunks=" + numOfChunks);
         
-        HttpURLConnection connection = (HttpURLConnection) torrentUrl.openConnection();
-        connection.setRequestMethod("PUT");
-        connection.connect();
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        line = in.readLine();
-        in.close();
+			HttpURLConnection connection = (HttpURLConnection) torrentUrl.openConnection();
+			connection.setRequestMethod("PUT");
+			connection.connect();
+			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			line = in.readLine();
+			in.close();
 		} catch(ConnectException e) {
 			System.out.println("WebService is down!");
-		} catch (IOException e) {
-			
+		} catch (IOException e) {	
 		}
+		
         if(line != null) {
         	return Torrent.decode(line);
         } else {
