@@ -46,6 +46,7 @@ public class ClientListener extends Thread {
 		}
 		
 		public void run() {
+			System.out.println("ClientListener: " + dataPacket.getData());
 			switch(this.dataPacket.getData()[0]) {
 			
 			case 1:
@@ -80,6 +81,7 @@ public class ClientListener extends Thread {
 			byteStream.write(dataPacket.getData(), 1, dataPacket.getData().length - 1);
 			byteStream.write(data);
 			byte[] uploadBuffer = byteStream.toByteArray(); 
+			System.out.println("ClientListener: " + uploadBuffer);
 			DatagramPacket uploadPacket = new DatagramPacket(uploadBuffer, uploadBuffer.length, dataPacket.getAddress(), dataPacket.getPort());
 			
 			// Send upload packet
