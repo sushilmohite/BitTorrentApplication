@@ -200,8 +200,8 @@ public class ClientUI {
 		table.setSelectionBackground(Color.BLUE);
 
 		// Add the torrents
-//		getTorrents();
-		getStaticTorrents();
+		getTorrents();
+//		getStaticTorrents();
 
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
