@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.io.StreamCorruptedException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.Socket;
@@ -436,7 +437,8 @@ public class ClientUI {
 					String filenameStr = filename.getText();
 					Torrent t = initUpload(filenameStr, FileHandler.getHash(filenameStr), fileSize, numOfChunks);
 					if(t != null) {
-						OngoingTorrent ot = new OngoingTorrent(t, filenameStr.substring(0, filenameStr.lastIndexOf(".")), true);
+//						OngoingTorrent ot = new OngoingTorrent(t, filenameStr.substring(0, filenameStr.lastIndexOf(".")), true);
+						OngoingTorrent ot = new OngoingTorrent(t, "", true);
 						addTorrent(ot);
 					}
 				} else {
@@ -457,7 +459,7 @@ public class ClientUI {
         String line = null;
 		try {
 			// Call Restful service and get Torrent
-			URL torrentUrl = new URL("http://" + Utility.WEB_SERVICE_IP + ":8080/BitTorrentWebService/webresources/resource?fileName=" + filenameStr + "&fileHash=" + hash + "&fileSize=" + fileSize + "&numberOfChunks=" + numOfChunks);
+			URL torrentUrl = new URL("http://" + Utility.WEB_SERVICE_IP + ":8080/BitTorrentWebService/webresources/resource?clientIP=" + InetAddress.getLocalHost().getHostAddress() + "&fileName=" + filenameStr + "&fileHash=" + hash + "&fileSize=" + fileSize + "&numberOfChunks=" + numOfChunks);
         
 			HttpURLConnection connection = (HttpURLConnection) torrentUrl.openConnection();
 			connection.setRequestMethod("PUT");
