@@ -838,6 +838,7 @@ public class ClientUI {
 				
 				// set clients
 				ot.setOtherClients(clients.toArray(new String[0]));
+				System.out.println(clients);
 				
 				// call clients
 				for (String client : clients) {
