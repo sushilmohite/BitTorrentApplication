@@ -396,8 +396,9 @@ public class ClientUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String message = "";
+				long fileSize = new File(filename.getText()).length();
+				int numOfChunks = 1;
 				try {
-					long fileSize = new File(filename.getText()).length();
 					if(fileSize == 0) {
 						message = "Please select a file";
 					} else {
@@ -405,7 +406,7 @@ public class ClientUI {
 							message = "Please input numbers only";
 							throw new Exception();
 						};
-						int numOfChunks = Integer.parseInt(chunks.getText());
+						numOfChunks = Integer.parseInt(chunks.getText());
 						int chunksize = (int)(fileSize / numOfChunks);
 						int lastChunkSize = (int)((fileSize % numOfChunks) + chunksize);
 						System.out.println(fileSize + " = " + chunksize + " * " + (numOfChunks - 1) + " + " + lastChunkSize);
@@ -422,9 +423,9 @@ public class ClientUI {
 				if(message.equals("")) {
 					jd.dispose();
 					jd.setVisible(false);
-					// TODO: Call Restful service
-					// I need access to values like chunk size, filehash etc. here...
-					// You can leave it and I'll do it 2moro when we meet...
+					String filenameStr = filename.getText();
+					Torrent t = initUpload(filenameStr, FileHandler.getHash(filenameStr), fileSize, numOfChunks);
+					OngoingTorrent ot = new OngoingTorrent(t, filenameStr.substring(0, filenameStr.lastIndexOf(".")), true);
 				} else {
 					JOptionPane.showMessageDialog(null, message);
 				}
@@ -439,6 +440,12 @@ public class ClientUI {
 
 	}
 	
+	protected Torrent initUpload(String filenameStr, String string, long fileSize, int numOfChunks) {
+		// TODO: Call Restful service and get Torrent
+		
+		return null;
+	}
+
 	private JScrollPane getDetailsTableView(OngoingTorrent ot) {
 		Border border = BorderFactory.createEtchedBorder();
 		JScrollPane listPane = new JScrollPane();

@@ -90,6 +90,10 @@ public class OngoingTorrent implements Serializable {
 	public int getLastChunkSize() {
 		return torrent.getLastChunkSize();
 	}
+	
+	public String getFileHash() {
+		return torrent.getFileHash();
+	}
 
 	public boolean isCompletelyDownloaded() {
 		return completed;
