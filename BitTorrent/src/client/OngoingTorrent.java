@@ -1,25 +1,28 @@
 package client;
 
 import java.io.File;
+import java.io.Serializable;
 
-public class OngoingTorrent {
+public class OngoingTorrent implements Serializable {
 
 	Torrent torrent;
 	private String location;
 	private boolean completed;
 	private String[] otherClients;
-	private int[] chunkStatus;
+	private byte[] chunkStatus;
 	
 	public OngoingTorrent(Torrent t, String location, boolean completed) {
 		this.torrent = t;
 		this.location = location;
 		this.completed = completed;
-		this.chunkStatus = new int[torrent.getNumberOfChunks()];
+		this.chunkStatus = new byte[torrent.getNumberOfChunks()];
 		if(!completed) {
 			for(int i = 0; i < torrent.getNumberOfChunks(); i++) {
 				chunkStatus[i] = -1;
 			}
 		}
+		// Get clients from tracker
+		otherClients = new String[] {"127.0.0.1"};
 		otherClients = getConnectedClients();
 	}
 	
@@ -32,8 +35,6 @@ public class OngoingTorrent {
 	}
 	
 	public String[] getConnectedClients() {
-		// Get clients from tracker
-		otherClients = new String[] {"127.0.0.1"};
 		return otherClients;
 	}
 
@@ -74,11 +75,39 @@ public class OngoingTorrent {
 	}
 
 	public String getNumOfConnectedPeers() {
-		return "" + 0;
+		return "" + otherClients.length;
 	}
 
 	public int getChunkSize() {
 		return torrent.getChunkSize();
+	}
+
+	public boolean isCompletelyDownloaded() {
+		return completed;
+	}
+	
+	public void setDownloaded(int chunk, String clientIp) {
+		int index = -1;
+		for(int i = 0; i < otherClients.length; i++) {
+			if(clientIp.equals(otherClients[i])) {
+				index = i;
+			}
+		}
+		
+		if(index != -1) {
+			chunkStatus[index] = (byte) index;
+		}
+		
+		completed = checkCompletion();
+	}
+
+	private boolean checkCompletion() {
+		for(int i = 0; i < torrent.getNumberOfChunks(); i++) {
+			if(!isChunkDownloaded(i)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

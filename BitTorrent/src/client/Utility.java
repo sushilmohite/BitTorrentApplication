@@ -5,6 +5,8 @@ public class Utility {
 	public static final int CLIENT_PORT = 10412;
 	public static final String[] COLUMNS = {"Filename", "Progress", "Size", "# of Peers"};
 
+	public static final String ONGOING_TORRENTS_FILE = "OngoingTorrents.info";
+	
 	// OP codes
 	public static final byte REQUEST = 0x01;
 	

@@ -2,6 +2,7 @@ package client;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -16,11 +17,14 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Random;
 import java.util.Scanner;
 
 import javax.swing.BorderFactory;
@@ -35,6 +39,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -50,6 +55,7 @@ import javax.swing.table.DefaultTableModel;
 public class ClientUI {
 
 	private JFrame jFrame;
+	private JDialog jd;
 	private ArrayList<OngoingTorrent> listOfTorrents;
 	private JTable table;
 	private String clientName;
@@ -63,7 +69,19 @@ public class ClientUI {
 		this.clientName = clientName;
 		this.listOfTorrents = new ArrayList<OngoingTorrent>();
 		jFrame = new JFrame("BitTorrent");
-		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		jFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		        if (JOptionPane.showConfirmDialog(jFrame, 
+		            "Are you sure you want to close this window?", "Exit", 
+		            JOptionPane.YES_NO_OPTION,
+		            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+		        	saveTorrents();
+		            System.exit(0);
+		        }
+		    }
+		});
 		
 		Component content = createComponents();
 		jFrame.getContentPane().add(content);
@@ -172,7 +190,8 @@ public class ClientUI {
 		table.setSelectionBackground(Color.BLUE);
 
 		// Add the torrents
-		getTorrents();
+//		getTorrents();
+		getStaticTorrents();
 
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
@@ -279,9 +298,136 @@ public class ClientUI {
 	}
 
 	protected void createUpload() {
+		JPanel main = new JPanel();
+		Dimension d = new Dimension(600, 100);
+		main.setPreferredSize(d);
+		main.setLayout(new GridBagLayout());
+		GridBagConstraints constraints = new GridBagConstraints();
+		main.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+		// Add Filename
+		JLabel fileNameLbl = new JLabel("File: ");
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.gridwidth = 1;
+		constraints.gridheight = 1;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.anchor = GridBagConstraints.WEST;
+		constraints.weightx = 15;
+		constraints.weighty = 2;
+		main.add(fileNameLbl, constraints);
+
+		// Add label
+		final JTextField filename = new JTextField();
+		filename.setEditable(false);
+		constraints.gridx = 1;
+		constraints.gridy = 0;
+		constraints.gridwidth = 1;
+		constraints.gridheight = 1;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.anchor = GridBagConstraints.WEST;
+		constraints.weightx = 75;
+		constraints.weighty = 2;
+		main.add(filename, constraints);
+
+		// Add Browse button
+		JButton browse = new JButton("Browse");
+		constraints.gridx = 2;
+		constraints.gridy = 0;
+		constraints.gridwidth = 1;
+		constraints.gridheight = 1;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.anchor = GridBagConstraints.WEST;
+		constraints.weightx = 10;
+		constraints.weighty = 2;
+		main.add(browse, constraints);
+
+		browse.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser jfc = new JFileChooser();
+				jfc.setAcceptAllFileFilterUsed(true);
+				jfc.showOpenDialog(null);
+				
+				File f = jfc.getSelectedFile();
+				filename.setText(f.getAbsolutePath());
+				
+			}
+		});
 		
+		// Add chunkLbl
+		JLabel chunkLbl = new JLabel("Number of chunks: ");
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		constraints.gridwidth = 1;
+		constraints.gridheight = 1;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.anchor = GridBagConstraints.WEST;
+		constraints.weightx = 15;
+		constraints.weighty = 2;
+		main.add(chunkLbl, constraints);
+
+		// Add chunks
+		final JTextField chunks = new JTextField();
+		constraints.gridx = 1;
+		constraints.gridy = 1;
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		constraints.gridheight = 1;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.anchor = GridBagConstraints.WEST;
+		constraints.weightx = 85;
+		constraints.weighty = 2;
+		main.add(chunks, constraints);
 		
-		// TODO: Call Restful service
+		// Add Upload button
+		JButton upload = new JButton("Upload");
+		constraints.gridx = 2;
+		constraints.gridy = 2;
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		constraints.gridheight = 1;
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.anchor = GridBagConstraints.WEST;
+		constraints.weightx = 10;
+		constraints.weighty = 2;
+		main.add(upload, constraints);
+		
+		upload.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String message = "";
+				try {
+					if(!chunks.getText().matches("^[0-9]+$")) {
+						message = "Please input numbers only";
+						throw new Exception();
+					};
+					int numOfChunks = Integer.parseInt(chunks.getText());
+					if(numOfChunks >= Utility.MAX_CHUNK_SIZE) {
+						message = "Please use chunksize less than " + Utility.MAX_CHUNK_SIZE;
+					}
+				} catch(NumberFormatException ex) {
+					message = "Please use chunksize less than " + Utility.MAX_CHUNK_SIZE;
+				} catch (Exception e1) {
+					
+				}
+				
+				if(message.equals("")) {
+					jd.dispose();
+					jd.setVisible(false);
+					// TODO: Call Restful service
+				} else {
+					JOptionPane.showMessageDialog(null, message);
+				}
+			}
+		});
+		
+		jd = new JDialog(jFrame, "Upload a file", Dialog.ModalityType.APPLICATION_MODAL);
+		jd.getContentPane().add(main);
+		jd.pack();
+		jd.setLocationRelativeTo(null);
+		jd.setVisible(true);
+
 	}
 	
 	private JScrollPane getDetailsTableView(OngoingTorrent ot) {
@@ -489,17 +635,46 @@ public class ClientUI {
 		});
 	}
 
-	public void updateConnectionsView(final OngoingTorrent ot) {
+	public void updateUI(final OngoingTorrent ot, String sender) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
+				
+				int row = listOfTorrents.indexOf(ot);
+
+				dataModel.setValueAt(ot.getProgress(), row, 1);
+				dataModel.setValueAt(ot.getNumOfConnectedPeers(), row, 3);
+				
+//				int row = 2;
+//				
+//				dataModel.setValueAt("10.00 %", row, 1);
+//				dataModel.setValueAt("3", row, 3);
+				
+                jFrame.validate();
+                jFrame.repaint();
+                
+			}
+		});
+        updateDetailsAndConnectionView(ot);
+        
+        // TODO: Send request to download next chunk
+	}
+	
+	public void updateDetailsAndConnectionView(final OngoingTorrent ot) {
 		if(table.getSelectedRow() == listOfTorrents.indexOf(ot)) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					GridBagLayout layout = (GridBagLayout) main.getLayout();
+					GridBagConstraints detailsConstraints = layout.getConstraints(detailsView);
 					GridBagConstraints connectionsConstraints = layout.getConstraints(connectionsView);
 					
+					main.remove(detailsView);
 					main.remove(connectionsView);
-	
+
+					detailsView = getDetailsTableView(ot);
 					connectionsView = getConnectionsView(ot);
-	
+
+					main.add(detailsView, detailsConstraints);
 					main.add(connectionsView, connectionsConstraints);
 					
 	                jFrame.validate();
@@ -508,11 +683,55 @@ public class ClientUI {
 			});
 		}
 	}
+
+	private void saveTorrents() {
+		// Save to directory
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(Utility.ONGOING_TORRENTS_FILE));
+			oos.writeObject(listOfTorrents);
+			oos.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	private void getTorrents() {
+		// Load from directory
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(Utility.ONGOING_TORRENTS_FILE));
+			listOfTorrents = (ArrayList<OngoingTorrent>) ois.readObject();
+			ois.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 		DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
+		for(OngoingTorrent ot : listOfTorrents) {
+			dataModel.addRow(new String[]{
+					ot.getFileName(),
+					ot.getProgress(),
+					ot.getFileSize(),
+					ot.getNumOfConnectedPeers()
+			});
+			if(!ot.isCompletelyDownloaded()) {
+				// TODO: Start downloader
+			}
+		}
+	}
+	
+	private void getStaticTorrents() {
+		DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
+		Random r = new Random();
 		for(int i = 0; i < 20; i++) {
-			Torrent t = new Torrent("file" + (i + 1), 102474, 1024);
+			long filesize = (long) (Utility.MAX_CHUNK_SIZE * (1 + r.nextDouble()));
+			int chunksize = (int) Utility.MB;
+//			chunksize = chunksize < 0 ? chunksize * -1 : chunksize;
+			Torrent t = new Torrent("File #" + i, filesize, chunksize);
 			OngoingTorrent ot = new OngoingTorrent(t, "", false);
 			listOfTorrents.add(ot);
 			dataModel.addRow(new String[]{
@@ -521,6 +740,20 @@ public class ClientUI {
 					ot.getFileSize(),
 					ot.getNumOfConnectedPeers()
 			});
+		}
+		long filesize = (long) (Utility.MAX_CHUNK_SIZE * (1 + r.nextDouble()));
+		int chunksize = (int) Utility.MB;
+//		chunksize = chunksize < 0 ? chunksize * -1 : chunksize;
+		Torrent t = new Torrent("New File", filesize, chunksize);
+		// Save to directory
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("/home/kedarnath/Desktop/test.torrent"));
+			oos.writeObject(t);
+			oos.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -569,13 +802,6 @@ public class ClientUI {
 
 	public static void main(String[] args) {
 		ClientUI c = new ClientUI(args[0]);
-		Scanner sc = new Scanner(System.in);
-		sc.next();
-		Torrent t = new Torrent("New file", 102474, 10249);
-		final OngoingTorrent ot = new OngoingTorrent(t, "", false);
-		
-		c.addTorrent(ot);
-		c.updateConnectionsView(ot);
 	}
 
 }
