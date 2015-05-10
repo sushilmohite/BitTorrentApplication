@@ -190,8 +190,8 @@ public class ClientUI {
 		table.setSelectionBackground(Color.BLUE);
 
 		// Add the torrents
-//		getTorrents();
-		getStaticTorrents();
+		getTorrents();
+//		getStaticTorrents();
 
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
@@ -398,16 +398,24 @@ public class ClientUI {
 			public void actionPerformed(ActionEvent e) {
 				String message = "";
 				try {
-					if(!chunks.getText().matches("^[0-9]+$")) {
-						message = "Please input numbers only";
-						throw new Exception();
-					};
-					int numOfChunks = Integer.parseInt(chunks.getText());
-					if(numOfChunks >= Utility.MAX_CHUNK_SIZE) {
-						message = "Please use chunksize less than " + Utility.MAX_CHUNK_SIZE;
+					long fileSize = new File(filename.getText()).length();
+					if(fileSize == 0) {
+						message = "Please select a file";
+					} else {
+						if(!chunks.getText().matches("^[0-9]+$")) {
+							message = "Please input numbers only";
+							throw new Exception();
+						};
+						int numOfChunks = Integer.parseInt(chunks.getText());
+						int chunksize = (int)(fileSize / numOfChunks);
+						int lastChunkSize = (int)((fileSize % numOfChunks) + chunksize);
+						System.out.println(fileSize + " = " + chunksize + " * " + (numOfChunks - 1) + " + " + lastChunkSize);
+						if(lastChunkSize > Utility.MAX_CHUNK_SIZE) {
+							message = "Please use a higher number of chunks";
+						}
 					}
 				} catch(NumberFormatException ex) {
-					message = "Please use chunksize less than " + Utility.MAX_CHUNK_SIZE;
+					message = "Please use a number less than " + Integer.MAX_VALUE;
 				} catch (Exception e1) {
 					
 				}
@@ -592,7 +600,7 @@ public class ClientUI {
 //			chunk.setMaximumSize(chunk.getPreferredSize());
 //			chunk.setPreferredSize(chunk.getPreferredSize());
 			if(client == null) {
-				if(ot.isChunkDownloaded(i)) {
+				if(ot.getChunkStatus(i) != -1) {
 //				if(i % 100 == 0) {
 					chunk.setBackground(Color.BLACK);
 				} else {

@@ -26,8 +26,8 @@ public class OngoingTorrent implements Serializable {
 		otherClients = getConnectedClients();
 	}
 	
-	public boolean isChunkDownloaded(int chunk) {
-		return chunkStatus[chunk] != -1;
+	public int getNumOfChunks() {
+		return torrent.getNumberOfChunks();
 	}
 	
 	public int getChunkStatus(int chunk) {
@@ -102,8 +102,8 @@ public class OngoingTorrent implements Serializable {
 	}
 
 	private boolean checkCompletion() {
-		for(int i = 0; i < torrent.getNumberOfChunks(); i++) {
-			if(!isChunkDownloaded(i)) {
+		for(int i = 0; i < getNumOfChunks(); i++) {
+			if(chunkStatus[i] == -1) {
 				return false;
 			}
 		}
