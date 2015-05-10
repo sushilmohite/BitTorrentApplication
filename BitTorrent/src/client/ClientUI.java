@@ -190,8 +190,8 @@ public class ClientUI {
 		table.setSelectionBackground(Color.BLUE);
 
 		// Add the torrents
-		getTorrents();
-//		getStaticTorrents();
+//		getTorrents();
+		getStaticTorrents();
 
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
@@ -292,8 +292,7 @@ public class ClientUI {
 		if(t != null) {
 			OngoingTorrent ot = new OngoingTorrent(t, "", false);
 			addTorrent(ot);
-			
-			// TODO: start downloading
+			startDownload(ot);
 		}
 	}
 
@@ -645,27 +644,31 @@ public class ClientUI {
 		});
 	}
 
-	public void updateUI(final OngoingTorrent ot, String sender) {
+	public void updateUI(final String filename, String sender) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
+				OngoingTorrent ot = null;
+				for(OngoingTorrent temp : listOfTorrents) {
+					if(temp.getFileName().equals(filename)) {
+						ot = temp;
+					}
+				}
 				
-				int row = listOfTorrents.indexOf(ot);
-
-				dataModel.setValueAt(ot.getProgress(), row, 1);
-				dataModel.setValueAt(ot.getNumOfConnectedPeers(), row, 3);
-				
-//				int row = 2;
-//				
-//				dataModel.setValueAt("10.00 %", row, 1);
-//				dataModel.setValueAt("3", row, 3);
-				
-                jFrame.validate();
-                jFrame.repaint();
-                
+				if(ot != null) {
+					DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
+					
+					int row = listOfTorrents.indexOf(ot);
+	
+					dataModel.setValueAt(ot.getProgress(), row, 1);
+					dataModel.setValueAt(ot.getNumOfConnectedPeers(), row, 3);
+					
+	                jFrame.validate();
+	                jFrame.repaint();
+	
+	                updateDetailsAndConnectionView(ot);
+				}
 			}
 		});
-        updateDetailsAndConnectionView(ot);
         
         // TODO: Send request to download next chunk
 	}
@@ -714,7 +717,7 @@ public class ClientUI {
 			listOfTorrents = (ArrayList<OngoingTorrent>) ois.readObject();
 			ois.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("No ongoing torrents found.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -729,7 +732,7 @@ public class ClientUI {
 					ot.getNumOfConnectedPeers()
 			});
 			if(!ot.isCompletelyDownloaded()) {
-				// TODO: Start downloader
+				startDownload(ot);
 			}
 		}
 	}
@@ -757,7 +760,7 @@ public class ClientUI {
 		Torrent t = new Torrent("New File", filesize, chunksize);
 		// Save to directory
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("/home/kedarnath/Desktop/test.torrent"));
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(System.getProperty("user.home") + File.separatorChar + "test.torrent"));
 			oos.writeObject(t);
 			oos.close();
 		} catch (FileNotFoundException e) {
@@ -766,7 +769,12 @@ public class ClientUI {
 			e.printStackTrace();
 		}
 	}
-	
+
+	private void startDownload(OngoingTorrent ot) {
+		// TODO Start downloading
+		
+	}
+
 	public void addTorrent(final OngoingTorrent ot) {
 		DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
 		int index = listOfTorrents.size();
