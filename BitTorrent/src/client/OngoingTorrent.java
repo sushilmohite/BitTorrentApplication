@@ -85,7 +85,11 @@ public class OngoingTorrent implements Serializable {
 	}
 
 	public String getNumOfConnectedPeers() {
-		return "" + otherClients.length;
+		if(otherClients != null) {
+			return "" + otherClients.length;
+		} else {
+			return "" + 0;
+		}
 	}
 
 	public int getChunkSize() {

@@ -509,8 +509,8 @@ public class ClientUI {
 			dataModel.addRow(new String[] {"Progress", ot.getProgress()});
 			dataModel.addRow(new String[] {"# of Peers", ot.getNumOfConnectedPeers()});
 
-//			String[] trackerIps = ot.torrent.getTrackerIP();
-			String[] trackerIps = new String[] {"2", "5", "7", "8"};
+			String[] trackerIps = ot.getTrackers();
+//			String[] trackerIps = new String[] {"2", "5", "7", "8"};
 			dataModel.addRow(new String[] {"Tracker IP(s)", trackerIps[0]});
 			for(int i = 1; i < trackerIps.length; i++) {
 				dataModel.addRow(new String[] {"", trackerIps[i]});
@@ -611,9 +611,11 @@ public class ClientUI {
 			JPanel myStatus = getChunkStatus(ot, null);
 			connectionsView.add(myStatus);
 			String[] otherClients = ot.getConnectedClients();
-			for(int i = 0; i < otherClients.length; i++) {
-				JPanel clientStatus = getChunkStatus(ot, otherClients[i]);
-				connectionsView.add(clientStatus);
+			if(otherClients != null) {
+				for(int i = 0; i < otherClients.length; i++) {
+					JPanel clientStatus = getChunkStatus(ot, otherClients[i]);
+					connectionsView.add(clientStatus);
+				}
 			}
 		}
 		
