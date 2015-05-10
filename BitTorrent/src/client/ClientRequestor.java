@@ -52,16 +52,16 @@ public class ClientRequestor extends Thread {
 		// Create request packet
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		byteStream.write(1);
-		byteStream.write(chunkNumber);
+		byteStream.write(Utility.intToByteArray(chunkNumber));
 		
 		if (isLastChunk) {
-			byteStream.write(ot.getLastChunkSize());
+			byteStream.write(Utility.intToByteArray(ot.getLastChunkSize()));
 		}
 		else {
-			byteStream.write(ot.getChunkSize());
+			byteStream.write(Utility.intToByteArray(ot.getChunkSize()));
 		}
 		byte[] fileName = ot.getFileName().getBytes();
-		byteStream.write(fileName.length);
+		byteStream.write(Utility.intToByteArray(fileName.length));
 		byteStream.write(fileName);
 		
 		byte[] requestBuffer = byteStream.toByteArray(); 
