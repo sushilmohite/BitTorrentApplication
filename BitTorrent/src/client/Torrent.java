@@ -19,7 +19,7 @@ public class Torrent implements Serializable {
     private long fileSize;
     private int numberOfChunks;
     private int chunkSize;
-    private long lastChunkSize;
+    private int lastChunkSize;
     
     public Torrent(String fileName, long fileSize, int chunkSize) {
 		this.fileName = fileName;
@@ -116,14 +116,14 @@ public class Torrent implements Serializable {
     /**
      * @return the lastChunkSize
      */
-    public long getLastChunkSize() {
+    public int getLastChunkSize() {
         return lastChunkSize;
     }
 
     /**
      * @param lastChunkSize the lastChunkSize to set
      */
-    public void setLastChunkSize(long lastChunkSize) {
+    public void setLastChunkSize(int lastChunkSize) {
         this.lastChunkSize = lastChunkSize;
     }
 }

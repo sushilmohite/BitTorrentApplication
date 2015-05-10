@@ -424,6 +424,8 @@ public class ClientUI {
 					jd.dispose();
 					jd.setVisible(false);
 					// TODO: Call Restful service
+					// I need access to values like chunk size, filehash etc. here...
+					// You can leave it and I'll do it 2moro when we meet...
 				} else {
 					JOptionPane.showMessageDialog(null, message);
 				}

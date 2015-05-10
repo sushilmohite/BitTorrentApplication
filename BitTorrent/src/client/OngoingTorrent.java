@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 public class OngoingTorrent implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	Torrent torrent;
 	private String location;
 	private boolean completed;
@@ -28,6 +29,10 @@ public class OngoingTorrent implements Serializable {
 	
 	public int getNumOfChunks() {
 		return torrent.getNumberOfChunks();
+	}
+	
+	public String getClient(int clientId) {
+		return otherClients[clientId];
 	}
 	
 	public int getChunkStatus(int chunk) {
@@ -80,6 +85,10 @@ public class OngoingTorrent implements Serializable {
 
 	public int getChunkSize() {
 		return torrent.getChunkSize();
+	}
+	
+	public int getLastChunkSize() {
+		return torrent.getLastChunkSize();
 	}
 
 	public boolean isCompletelyDownloaded() {
