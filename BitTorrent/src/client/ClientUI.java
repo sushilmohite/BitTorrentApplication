@@ -14,14 +14,20 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Random;
@@ -424,7 +430,13 @@ public class ClientUI {
 					jd.dispose();
 					jd.setVisible(false);
 					String filenameStr = filename.getText();
-					Torrent t = initUpload(filenameStr, FileHandler.getHash(filenameStr), fileSize, numOfChunks);
+					Torrent t = null;
+					try {
+						t = initUpload(filenameStr, FileHandler.getHash(filenameStr), fileSize, numOfChunks);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					OngoingTorrent ot = new OngoingTorrent(t, filenameStr.substring(0, filenameStr.lastIndexOf(".")), true);
 				} else {
 					JOptionPane.showMessageDialog(null, message);
@@ -440,8 +452,22 @@ public class ClientUI {
 
 	}
 	
-	protected Torrent initUpload(String filenameStr, String hash, long fileSize, int numOfChunks) {
-		// TODO: Call Restful service and get Torrent
+	protected Torrent initUpload(String filenameStr, String hash, long fileSize, int numOfChunks) throws IOException {
+		// Call Restful service and get Torrent
+		URL torrentUrl = new URL("http://" + Utility.WEB_SERVICE_IP + ":8080/BitTorrentWebService/webresources/resource?fileName=" + filenameStr + "&fileHash=" + hash + "&fileSize=" + fileSize + "&numberOfChunks=" + numOfChunks);
+        
+        HttpURLConnection connection = (HttpURLConnection) torrentUrl.openConnection();
+        connection.setRequestMethod("PUT");
+        connection.connect();
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String line;
+        StringBuffer stringBuffer = new StringBuffer();
+
+        while ((line = in.readLine()) != null) {
+            stringBuffer.append(line);
+            stringBuffer.append("\n");
+        }
+        in.close();
 		
 		return null;
 	}

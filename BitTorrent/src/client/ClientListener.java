@@ -7,7 +7,7 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.Arrays;
 
-public class ClientListener {
+public class ClientListener extends Thread {
 	
 	DatagramSocket socket;
 	ClientUI clientUI;
@@ -17,15 +17,19 @@ public class ClientListener {
 		this.clientUI = clientUI;
 	}
 	
-	public void run() throws IOException {
+	public void run() {
 		
 		// Create resources for incoming data
 		byte[] dataBuffer = new byte[Utility.MAX_CHUNK_SIZE];
 		DatagramPacket dataPacket = new DatagramPacket(dataBuffer, dataBuffer.length);
 		
 		while (true) {
-			socket.receive(dataPacket);
-			new HandlePacket(dataPacket).start();
+			try {
+				socket.receive(dataPacket);
+				new HandlePacket(dataPacket).start();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -88,6 +92,7 @@ public class ClientListener {
 			byte[] data = Arrays.copyOfRange(dataPacket.getData(), dataOffset, dataPacket.getLength() - 1);
 			
 			FileHandler.writeToFile(fileName, startPosition, data);
+			clientUI.updateUI(fileName, dataPacket.getAddress().getHostAddress());
 		}
 	}
 }
