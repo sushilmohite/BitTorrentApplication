@@ -39,6 +39,14 @@ public class OngoingTorrent implements Serializable {
 		return chunkStatus[chunk];
 	}
 	
+	public String[] getTrackers() {
+		return torrent.getTrackerIP();
+	}
+	
+	public void setOtherClients(String[] otherClients) {
+		this.otherClients = otherClients;
+	}
+	
 	public String[] getConnectedClients() {
 		return otherClients;
 	}

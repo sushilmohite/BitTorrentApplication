@@ -13,8 +13,9 @@ import java.util.Scanner;
  * @author Sushil Mohite
  */
 public class Torrent implements Serializable {
-    
-    private final String fileName;
+	
+	private static final long serialVersionUID = 1L;
+	private final String fileName;
     private String fileHash;
     private long fileSize;
     private String[] trackerIP;
@@ -175,10 +176,4 @@ public class Torrent implements Serializable {
         sc.close();
     	return new Torrent(fileName, fileHash, fileSize, trackerIP, numberOfChunks, chunkSize, lastChunkSize);
     }
-    
-    public static void main(String[] args) {
-		String str = "file1.img,1231782,1232,192.168.100.1;192.168.100.2,12,100,132";
-		Torrent t = Torrent.decode(str);
-		System.out.println(t);
-	}
 }

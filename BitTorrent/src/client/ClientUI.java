@@ -23,14 +23,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.StreamCorruptedException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -806,13 +809,42 @@ public class ClientUI {
 	}
 
 	private void startDownload(OngoingTorrent ot) {
-		// TODO: Connect to tracker and extract otherClient IPs
+		// Connect to tracker and extract otherClient IPs
+		String[] trackers = ot.getTrackers();
+		boolean foundTracker = false;
+		String request = "2" + " " + ot.getFileHash();
+		for (int i = 0; i < trackers.length && !foundTracker; i++) {
+			try {
+				Socket socket = new Socket(trackers[i], Utility.TRACKER_PORT);
+				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+				ObjectInputStream br = new ObjectInputStream(socket.getInputStream());
+				
+				out.println(request);
+				List<String> clients = (List<String>) br.readObject();
+				
+				// set clients
+				ot.setOtherClients(clients.toArray(new String[0]));
+				
+				// call clients
+				for (String client : clients) {
+					downloadNextChunk(ot, client);
+				}
+				
+				br.close();
+				out.close();
+				socket.close();
+				foundTracker = true;
+			}
+			catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
 		
 	}
 	
 	protected void downloadNextChunk(OngoingTorrent ot, String sender) {
-		// TODO: Download next chunk
-		
+		// Download next chunk
+		new ClientRequestor(ot, sender).start();
 	}
 
 	public void addTorrent(final OngoingTorrent ot) {
@@ -860,6 +892,7 @@ public class ClientUI {
 
 	public static void main(String[] args) {
 		ClientUI c = new ClientUI(args[0]);
+		new ClientListener(c).start();
 	}
 
 }

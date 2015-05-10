@@ -11,12 +11,12 @@ import java.util.Random;
 
 public class ClientRequestor extends Thread {
 	
-	int clientId;
 	OngoingTorrent ot;
+	String sender;
 	
-	public ClientRequestor(int clientId, OngoingTorrent ot) {
-		this.clientId = clientId;
+	public ClientRequestor(OngoingTorrent ot, String sender) {
 		this.ot = ot;
+		this.sender = sender;
 	}
 	
 	public void run() {
@@ -64,7 +64,7 @@ public class ClientRequestor extends Thread {
 		byteStream.write(fileName);
 		
 		byte[] requestBuffer = byteStream.toByteArray(); 
-		DatagramPacket requestPacket = new DatagramPacket(requestBuffer, requestBuffer.length, InetAddress.getByName(ot.getClient(clientId)), Utility.CLIENT_PORT);
+		DatagramPacket requestPacket = new DatagramPacket(requestBuffer, requestBuffer.length, InetAddress.getByName(sender), Utility.CLIENT_PORT);
 		
 		// Send upload packet
 		socket.send(requestPacket);
