@@ -700,16 +700,23 @@ public class ClientUI {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				OngoingTorrent ot = null;
-				for(OngoingTorrent temp : listOfTorrents) {
+				/*for(OngoingTorrent temp : listOfTorrents) {
 					if(temp.getFileName().equals(filename)) {
 						ot = temp;
+					}
+				}*/
+				int index = -1;
+				for(int i = 0; i < listOfTorrents.size(); i++) {
+					if(listOfTorrents.get(i).getFileName().equals(filename)) {
+						index = i;
+						ot = listOfTorrents.get(i);
 					}
 				}
 				
 				if(ot != null) {
 					DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
 					
-					int row = listOfTorrents.indexOf(ot);
+					int row = index;
 	
 					dataModel.setValueAt(ot.getProgress(), row, 1);
 					dataModel.setValueAt(ot.getNumOfConnectedPeers(), row, 3);
@@ -718,6 +725,8 @@ public class ClientUI {
 	                jFrame.repaint();
 
 	                ot.setDownloaded(chunkNumber, sender);
+	                
+	                listOfTorrents.set(index, ot);
 	                updateDetailsAndConnectionView(ot);
 	                
 	                /*if(!ot.isCompletelyDownloaded()) {
