@@ -23,11 +23,17 @@ public class ClientListener extends Thread {
 		byte[] dataBuffer = new byte[Utility.MAX_CHUNK_SIZE];
 		DatagramPacket dataPacket = new DatagramPacket(dataBuffer, dataBuffer.length);
 
+		DatagramSocket socket = null;
+		try {
+			socket = new DatagramSocket(Utility.CLIENT_PORT);
+		} catch (SocketException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		while (true) {
-			try {
-				DatagramSocket socket = new DatagramSocket(Utility.CLIENT_PORT);	
+			try {	
 				socket.receive(dataPacket);
-				socket.close();
+				
 				new HandlePacket(dataPacket).start();
 				
 				sleep(100);
