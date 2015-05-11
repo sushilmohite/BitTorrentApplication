@@ -725,8 +725,10 @@ public class ClientUI {
 					
 	                jFrame.validate();
 	                jFrame.repaint();
-
 	                
+	                if(table.getSelectedRow() == row) {
+	                	updateDetailsAndConnectionView(ot);
+	                }
 	                /*if(!ot.isCompletelyDownloaded()) {
 	                	downloadNextChunk(ot, sender);
 	                }*/
@@ -736,28 +738,26 @@ public class ClientUI {
         System.out.println("Updating UI.. sending next request");
 	}
 
-	public void updateDetailsAndConnectionView(final OngoingTorrent ot) {
-		if(table.getSelectedRow() == listOfTorrents.indexOf(ot)) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					GridBagLayout layout = (GridBagLayout) main.getLayout();
-					GridBagConstraints detailsConstraints = layout.getConstraints(detailsView);
-					GridBagConstraints connectionsConstraints = layout.getConstraints(connectionsView);
-					
-					main.remove(detailsView);
-					main.remove(connectionsView);
+	public void updateDetailsAndConnectionView(final OngoingTorrent ot) {	
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				GridBagLayout layout = (GridBagLayout) main.getLayout();
+				GridBagConstraints detailsConstraints = layout.getConstraints(detailsView);
+				GridBagConstraints connectionsConstraints = layout.getConstraints(connectionsView);
+				
+				main.remove(detailsView);
+				main.remove(connectionsView);
 
-					detailsView = getDetailsTableView(ot);
-					connectionsView = getConnectionsView(ot);
+				detailsView = getDetailsTableView(ot);
+				connectionsView = getConnectionsView(ot);
 
-					main.add(detailsView, detailsConstraints);
-					main.add(connectionsView, connectionsConstraints);
-					
-	                jFrame.validate();
-	                jFrame.repaint();
-				}
-			});
-		}
+				main.add(detailsView, detailsConstraints);
+				main.add(connectionsView, connectionsConstraints);
+				
+                jFrame.validate();
+                jFrame.repaint();
+			}
+		});
 	}
 
 	private void saveTorrents() {
