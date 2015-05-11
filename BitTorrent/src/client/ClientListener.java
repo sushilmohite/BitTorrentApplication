@@ -33,7 +33,7 @@ public class ClientListener extends Thread {
 				System.out.println("ClientListener: Waiting..");
 				socket.receive(dataPacket);
 				socket.close();
-				(new HandlePacket(dataPacket)).start();
+				(new HandlePacket(dataPacket)).run();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
