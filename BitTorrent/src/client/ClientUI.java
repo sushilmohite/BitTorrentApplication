@@ -81,7 +81,11 @@ public class ClientUI {
 	public ClientUI(String clientName) {
 		setUIFont();
 		this.clientName = clientName;
-		this.listOfTorrents = new ArrayList<OngoingTorrent>();
+
+		// Add the torrents
+		getTorrents();
+//		getStaticTorrents();
+		
 		jFrame = new JFrame("BitTorrent");
 		jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		jFrame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -204,7 +208,8 @@ public class ClientUI {
 		table.setSelectionBackground(Color.BLUE);
 
 		// Add the torrents
-		getTorrents();
+		addFilesToUI();
+//		getTorrents();
 //		getStaticTorrents();
 
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -234,7 +239,7 @@ public class ClientUI {
 		main.add(listPane, constraints);
 		
 		// Add details view
-		detailsView = getDetailsView(null);
+		detailsView = getDetailsTableView(null);
 		constraints.gridx = 0;
 		constraints.gridy = 3;
 		constraints.gridwidth = 1;
@@ -544,55 +549,6 @@ public class ClientUI {
 		return listPane;
 	}
 	
-	private JScrollPane getDetailsView(OngoingTorrent ot) {
-		Border border = BorderFactory.createEtchedBorder();
-		JScrollPane listPane = new JScrollPane();
-
-		listPane.setBorder(BorderFactory.createTitledBorder(border, "Details"));
-		listPane.setMinimumSize(listPane.getPreferredSize());
-		listPane.setMaximumSize(listPane.getPreferredSize());
-		listPane.setPreferredSize(listPane.getPreferredSize());
-		
-		JPanel detailsView = new JPanel();
-		detailsView.setLayout(new GridLayout(0, 2));
-		detailsView.setMinimumSize(detailsView.getPreferredSize());
-		detailsView.setMaximumSize(detailsView.getPreferredSize());
-		detailsView.setPreferredSize(detailsView.getPreferredSize());
-		detailsView.setFont(new Font(Font.SERIF, 0, detailsView.getFont().getSize() + 2));
-		
-		if(ot != null) {
-			detailsView.add(new JLabel("Filename"));
-			detailsView.add(new JLabel(ot.getFileName()));
-			
-			detailsView.add(new JLabel("Size"));
-			detailsView.add(new JLabel(ot.getFileSize()));
-			
-			detailsView.add(new JLabel("Progress"));
-			detailsView.add(new JLabel(ot.getProgress()));
-			
-			detailsView.add(new JLabel("# of Peers"));
-			detailsView.add(new JLabel(ot.getNumOfConnectedPeers()));
-			
-			detailsView.add(new JLabel("Tracker IP(s)"));
-//			String[] trackerIps = ot.torrent.getTrackerIP();
-			String[] trackerIps = new String[] {"2", "5", "7", "8"};
-			detailsView.add(new JLabel(trackerIps[0]));
-			for(int i = 1; i < trackerIps.length; i++) {
-				detailsView.add(new JLabel(""));
-				detailsView.add(new JLabel(trackerIps[i]));
-			}
-			
-			detailsView.add(new JLabel("# of Chunks"));
-			detailsView.add(new JLabel("" + ot.torrent.getNumberOfChunks()));
-			
-			detailsView.add(new JLabel("Chunk size"));
-			detailsView.add(new JLabel("" + ot.torrent.getChunkSize()));
-			
-		}
-		listPane.setViewportView(detailsView);
-		return listPane;
-	}
-	
 	private JScrollPane getConnectionsView(OngoingTorrent ot) {
 		Border border = BorderFactory.createEtchedBorder();
 		JScrollPane listPane = new JScrollPane();
@@ -644,7 +600,7 @@ public class ClientUI {
 		panel.add(name);
 		
 		JPanel chunks = new JPanel(new FlowLayout());
-		Dimension d = new Dimension((int)dummyLabel.getPreferredSize().getWidth() * 5, (int)dummyLabel.getPreferredSize().getHeight() * 2);
+		Dimension d = new Dimension((int)dummyLabel.getPreferredSize().getWidth() * 5, (int)dummyLabel.getPreferredSize().getHeight() * 6);
 		chunks.setMinimumSize(d);
 		chunks.setMaximumSize(d);
 		chunks.setPreferredSize(d);
@@ -802,11 +758,15 @@ public class ClientUI {
 			ois.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("No ongoing torrents found.");
+			listOfTorrents = new ArrayList<OngoingTorrent>();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void addFilesToUI() {
 		DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
 		for(OngoingTorrent ot : listOfTorrents) {
 			dataModel.addRow(new String[]{
