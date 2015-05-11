@@ -52,6 +52,7 @@ public class ClientRequestor extends Thread {
 				e.printStackTrace();
 			}
 		}
+		System.out.println(FileHandler.getHash(ot.getFileName()));
 	}
 	
 	private void requestChunk(int chunkNumber, boolean isLastChunk) throws IOException {
