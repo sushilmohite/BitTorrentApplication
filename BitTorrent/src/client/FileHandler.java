@@ -35,6 +35,8 @@ public class FileHandler {
 			
 			if(bytesRead > 0) {
 				bytes = Arrays.copyOf(buf.array(), bytesRead);
+			} else {
+				System.out.println("No bytes read!");
 			}
 			
 			raFile.close();
