@@ -21,16 +21,16 @@ public class ClientListener extends Thread {
 		// Create resources for incoming data
 		byte[] dataBuffer = new byte[Utility.MAX_CHUNK_SIZE];
 		DatagramPacket dataPacket = new DatagramPacket(dataBuffer, dataBuffer.length);
-		
+
+		DatagramSocket socket = null;
+		try {
+			socket = new DatagramSocket(Utility.CLIENT_PORT);
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
 		while (true) {
 			try {
 				System.out.println("ClientListener: Waiting..");
-				DatagramSocket socket = null;
-				try {
-					socket = new DatagramSocket(Utility.CLIENT_PORT);
-				} catch (SocketException e) {
-					e.printStackTrace();
-				}
 				socket.receive(dataPacket);
 				(new HandlePacket(dataPacket)).start();
 			} catch (IOException e) {
