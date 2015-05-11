@@ -19,7 +19,7 @@ public class Utility {
 	public static final float MB = 1024 * 1024;
 	public static final float GB = 1024 * 1024 * 1024;
 	
-	public static final int MAX_CHUNK_SIZE = (int) (10 * KB);
+	public static final int MAX_CHUNK_SIZE = (int) (100 * KB);
 	
 	public static final String HASH_ALGORITHM = "SHA-1";
 	
