@@ -956,6 +956,22 @@ public class ClientUI {
 		}
 	}*/
 
+	public int getChunkSize(String filename) {
+		OngoingTorrent ot = null;
+		for(OngoingTorrent temp : listOfTorrents) {
+			if(temp.getFileName().equals(filename)) {
+				ot = temp;
+			}
+		}
+		
+		if(ot != null) {
+			return ot.getChunkSize();
+		} else {
+			System.out.println("Ongoing torrent not found!");
+			return -1;
+		}
+	}
+
     public static void setUIFont() {
     	FontUIResource f = new FontUIResource(new Font(Font.SERIF, 0, 20));
         Enumeration keys = UIManager.getDefaults().keys();
