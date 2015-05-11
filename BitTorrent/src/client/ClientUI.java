@@ -717,6 +717,8 @@ public class ClientUI {
 					DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
 					
 					int row = index;
+					
+	                listOfTorrents.get(index).setDownloaded(chunkNumber, sender);
 	
 					dataModel.setValueAt(ot.getProgress(), row, 1);
 					dataModel.setValueAt(ot.getNumOfConnectedPeers(), row, 3);
@@ -724,7 +726,6 @@ public class ClientUI {
 	                jFrame.validate();
 	                jFrame.repaint();
 
-	                listOfTorrents.get(index).setDownloaded(chunkNumber, sender);
 	                
 	                /*if(!ot.isCompletelyDownloaded()) {
 	                	downloadNextChunk(ot, sender);
