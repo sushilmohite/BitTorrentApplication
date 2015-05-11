@@ -744,12 +744,12 @@ public class ClientUI {
 								ObjectInputStream br = new ObjectInputStream(socket.getInputStream());
 								out.println(updateTracker);
 								
-								boolean success = (boolean) br.readObject();
+								updatedTracker = (boolean) br.readObject();
 								out.close();
 								br.close();
 								socket.close();
 							} catch (Exception e) {
-								e.printStackTrace();
+								System.out.println(trackers[i] + " is down!");
 							}	                		
 	                	}
 	                }
