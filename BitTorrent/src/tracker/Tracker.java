@@ -102,7 +102,7 @@ public class Tracker {
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 				String input = br.readLine();
-				System.out.println(input);
+				//System.out.println(input);
 				String[] params = input.split(" ");
 			
 				switch (Integer.parseInt(params[0])) {
