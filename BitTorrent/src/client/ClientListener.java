@@ -77,7 +77,7 @@ public class ClientListener extends Thread {
 			int chunkNumber = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 1, 5));
 			int chunkSize = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 5, 9));
 			int fileNameSize = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 9, 13));
-			System.out.print(chunkNumber + " ");// + " " + chunkSize + " " + fileNameSize);
+			System.out.println(chunkNumber);// + " " + chunkSize + " " + fileNameSize);
 			String fileName = new String(dataPacket.getData(), 13, fileNameSize);
 			int startPosition = chunkNumber * chunkSize;
 //			System.out.println(chunkNumber + " " + chunkSize + " " + fileName + " " + startPosition);
