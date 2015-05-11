@@ -895,6 +895,38 @@ public class ClientUI {
 
         table.scrollRectToVisible(rect);
     }
+	
+	public boolean isCompletelyDownloaded(String filename) {
+		OngoingTorrent ot = null;
+		for(OngoingTorrent temp : listOfTorrents) {
+			if(temp.getFileName().equals(filename)) {
+				ot = temp;
+			}
+		}
+		
+		if(ot != null) {
+			return ot.isCompletelyDownloaded();
+		} else {
+			System.out.println("Ongoing torrent not found!");
+			return false;
+		}
+	}
+	
+	public int getChunkStatus(String filename, int chunkNumber) {
+		OngoingTorrent ot = null;
+		for(OngoingTorrent temp : listOfTorrents) {
+			if(temp.getFileName().equals(filename)) {
+				ot = temp;
+			}
+		}
+		
+		if(ot != null) {
+			return ot.getChunkStatus(chunkNumber);
+		} else {
+			System.out.println("Ongoing torrent not found!");
+			return -1;
+		}
+	}
 
     public static void setUIFont() {
     	FontUIResource f = new FontUIResource(new Font(Font.SERIF, 0, 20));
@@ -909,7 +941,7 @@ public class ClientUI {
             }
         }
     }
-
+    
 	public static void main(String[] args) {
 		ClientUI c = new ClientUI(args[0]);
 		new ClientListener(c).start();
