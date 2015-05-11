@@ -731,6 +731,7 @@ public class ClientUI {
 	                	updateDetailsAndConnectionView(ot);
 	                }
 	                if(ot.isCompletelyDownloaded()) {
+	                	System.out.println("Final hash: " + FileHandler.getHash(ot.getFileName()));
 	                	// Contact tracker
 	                	String[] trackers = ot.getTrackers();
 	                	boolean updatedTracker = false;
