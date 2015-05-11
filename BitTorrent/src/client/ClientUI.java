@@ -696,7 +696,7 @@ public class ClientUI {
 		});
 	}
 
-	public void updateUI(final String filename, final String sender) {
+	public void updateUI(final String filename, final String sender, final int chunkNumber) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				OngoingTorrent ot = null;
@@ -716,7 +716,8 @@ public class ClientUI {
 					
 	                jFrame.validate();
 	                jFrame.repaint();
-	
+
+	                ot.setDownloaded(chunkNumber, sender);
 	                updateDetailsAndConnectionView(ot);
 	        		downloadNextChunk(ot, sender);
 				}

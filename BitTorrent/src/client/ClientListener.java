@@ -115,7 +115,7 @@ public class ClientListener extends Thread {
 			
 			System.out.println("Writing to file..");
 			FileHandler.writeToFile(fileName, startPosition, data);
-			clientUI.updateUI(fileName, dataPacket.getAddress().getHostAddress());
+			clientUI.updateUI(fileName, dataPacket.getAddress().getHostAddress(), chunkNumber);
 		}
 	}
 }
