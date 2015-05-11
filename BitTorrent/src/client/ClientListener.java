@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Arrays;
 
@@ -95,7 +96,7 @@ public class ClientListener extends Thread {
 			System.out.println(Arrays.toString(data));
 			byte[] uploadBuffer = byteStream.toByteArray(); 
 			System.out.println("ClientListener: " + Arrays.toString(uploadBuffer));
-			DatagramPacket uploadPacket = new DatagramPacket(uploadBuffer, uploadBuffer.length, dataPacket.getAddress(), dataPacket.getPort());
+			DatagramPacket uploadPacket = new DatagramPacket(uploadBuffer, uploadBuffer.length, /*dataPacket.getAddress()*/InetAddress.getByName("192.168.100.113"), Utility.CLIENT_PORT);
 			
 			DatagramSocket socket = new DatagramSocket(); 
 			// Send upload packet
