@@ -660,7 +660,7 @@ public class ClientUI {
 					chunk.setBackground(Color.WHITE);
 				}
 			} else {
-				if(client.equals(ot.getChunkStatus(i))) {
+				if(client.equals(ot.getClient(ot.getChunkStatus(i)))) {
 					chunk.setBackground(Color.BLACK);
 				} else {
 					chunk.setBackground(Color.WHITE);
