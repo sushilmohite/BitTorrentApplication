@@ -864,7 +864,7 @@ public class ClientUI {
 	protected void downloadNextChunk(OngoingTorrent ot, String sender) {
 		// Download next chunk
 		// reset timer
-		new ClientRequestor(ot, sender).start();
+		new ClientRequestor(this, ot, sender).start();
 	}
 
 	public void addTorrent(final OngoingTorrent ot) {

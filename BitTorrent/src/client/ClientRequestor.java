@@ -11,22 +11,24 @@ import java.util.Random;
 
 public class ClientRequestor extends Thread {
 	
+	ClientUI c;
 	OngoingTorrent ot;
 	String sender;
 	
-	public ClientRequestor(OngoingTorrent ot, String sender) {
+	public ClientRequestor(ClientUI clientUI, OngoingTorrent ot, String sender) {
+		this.c = clientUI;
 		this.ot = ot;
 		this.sender = sender;
 	}
 	
 	public void run() {
-		while(!ot.isCompletelyDownloaded()) {
+		while(!c.isCompletelyDownloaded(ot.getFileName())) {
 			System.out.println("inside client requestor");
 			List<Integer> chunks = new ArrayList<Integer>();
 			int numOfChunks = ot.getNumOfChunks();
 			
 			for (int i = 0; i < numOfChunks; i++) {
-				if (ot.getChunkStatus(i) == -1) {
+				if (c.getChunkStatus(ot.getFileName(), i) == -1) {
 					chunks.add(i);
 				}
 			}
