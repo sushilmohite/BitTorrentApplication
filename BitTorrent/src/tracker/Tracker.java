@@ -66,7 +66,9 @@ public class Tracker {
 
 			if (hashValue != null && !hashValue.equals("") && clientIP != null && !clientIP.equals("")) {
 				if (clientInfo.containsKey(hashValue)) {
-					clientInfo.get(hashValue).add(clientIP);
+					if(!clientInfo.get(hashValue).contains(clientIP)) {
+						clientInfo.get(hashValue).add(clientIP);
+					}
 				} else {
 					List<String> clients = new ArrayList<String>();
 					clients.add(clientIP);
