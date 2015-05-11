@@ -82,10 +82,16 @@ public class ClientListener extends Thread {
 			// Create upload packet
 			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 			byteStream.write(2);
-			byteStream.write(dataPacket.getData(), 1, dataPacket.getData().length - 1);
+//			byteStream.write(dataPacket.getData(), 1, dataPacket.getData().length - 1);
+//			byteStream.write(new byte[100]);
+			byteStream.write(Utility.intToByteArray(chunkNumber));
+			byteStream.write(Utility.intToByteArray(chunkSize));
+			byteStream.write(Utility.intToByteArray(fileNameSize));
+			byteStream.write(fileName.getBytes());
 			byteStream.write(data);
+			System.out.println(Arrays.toString(data));
 			byte[] uploadBuffer = byteStream.toByteArray(); 
-			System.out.println("ClientListener: " + uploadBuffer);
+			System.out.println("ClientListener: " + Arrays.toString(uploadBuffer));
 			DatagramPacket uploadPacket = new DatagramPacket(uploadBuffer, uploadBuffer.length, dataPacket.getAddress(), dataPacket.getPort());
 			
 			// Send upload packet
@@ -93,14 +99,15 @@ public class ClientListener extends Thread {
 		}
 		
 		private void receivedData() {
-			int chunkNumber = Integer.parseInt(new String(dataPacket.getData(), 1, 4));
-			int chunkSize = Integer.parseInt(new String(dataPacket.getData(), 5, 4));
-			int fileNameSize = Integer.parseInt(new String(dataPacket.getData(), 9, 4));
+			int chunkNumber = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 1, 5));
+			int chunkSize = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 5, 9));
+			int fileNameSize = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 9, 13));
 			String fileName = new String(dataPacket.getData(), 13, fileNameSize);
 			int startPosition = chunkNumber * chunkSize;
 			int dataOffset = 13 + fileNameSize;
 			byte[] data = Arrays.copyOfRange(dataPacket.getData(), dataOffset, dataPacket.getLength() - 1);
 			
+			System.out.println("Writing to file..");
 			FileHandler.writeToFile(fileName, startPosition, data);
 			clientUI.updateUI(fileName, dataPacket.getAddress().getHostAddress());
 		}

@@ -722,7 +722,7 @@ public class ClientUI {
 				}
 			}
 		});
-        
+        System.out.println("Updating UI.. sending next request");
 	}
 
 	public void updateDetailsAndConnectionView(final OngoingTorrent ot) {
