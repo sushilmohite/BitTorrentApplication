@@ -28,7 +28,7 @@ public class FileHandler {
 			RandomAccessFile raFile = new RandomAccessFile(fileName, "r");
 			FileChannel fc = raFile.getChannel();
 			
-			fc.position(startPosition);
+			fc.position(startPosition + 1);
 			ByteBuffer buf = ByteBuffer.allocate(size);
 			
 			int bytesRead = fc.read(buf);
