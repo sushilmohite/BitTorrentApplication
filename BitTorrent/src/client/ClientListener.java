@@ -83,6 +83,9 @@ public class ClientListener extends Thread {
 //			System.out.println(chunkNumber + " " + chunkSize + " " + fileName + " " + startPosition);
 			byte[] data = FileHandler.getChunk(fileName, startPosition, chunkSize);
 			
+			if(data == null) {
+				return;
+			}
 			// Create upload packet
 			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 			byteStream.write(2);

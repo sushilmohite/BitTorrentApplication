@@ -36,6 +36,7 @@ public class FileHandler {
 			if(bytesRead > 0) {
 				bytes = Arrays.copyOf(buf.array(), bytesRead);
 			} else {
+				System.out.println(fileName + " " + startPosition + " " + size);
 				System.out.println("No bytes read!");
 			}
 			
