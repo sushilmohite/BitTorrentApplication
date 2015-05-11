@@ -35,7 +35,7 @@ public class ClientRequestor extends Thread {
 			
 			try {
 				if (chunkNumber == (numOfChunks - 1)) {
-					requestChunk(chunkNumber, true);
+					requestChunk(chunkNumber, false);
 				} 
 				else {
 					requestChunk(chunkNumber, false);
