@@ -55,7 +55,7 @@ public class FileHandler {
 			FileChannel fc = raFile.getChannel();
 			
 			ByteBuffer buf = ByteBuffer.wrap(bytes);
-			fc.write(buf, startPosition + 1);
+			fc.write(buf, startPosition);
 			
 			raFile.close();
 		} catch (FileNotFoundException e) {
