@@ -12,13 +12,13 @@ public class OngoingTorrent implements Serializable {
 	private String location;
 	private boolean completed;
 	private String[] otherClients;
-	private byte[] chunkStatus;
+	private int[] chunkStatus;
 	
 	public OngoingTorrent(Torrent t, String location, boolean completed) {
 		this.torrent = t;
 		this.location = location;
 		this.completed = completed;
-		this.chunkStatus = new byte[torrent.getNumberOfChunks()];
+		this.chunkStatus = new int[torrent.getNumberOfChunks()];
 		if(!completed) {
 			for(int i = 0; i < torrent.getNumberOfChunks(); i++) {
 				chunkStatus[i] = -1;
@@ -119,7 +119,7 @@ public class OngoingTorrent implements Serializable {
 		}
 		
 		if(index != -1) {
-			chunkStatus[index] = (byte) index;
+			chunkStatus[chunk] = index;
 		}
 		
 		completed = checkCompletion();
