@@ -20,7 +20,7 @@ public class ClientRequestor extends Thread {
 	}
 	
 	public void run() {
-		if(!ot.isCompletelyDownloaded()) {
+		while (!ot.isCompletelyDownloaded()) {
 			System.out.println("inside client requestor");
 			List<Integer> chunks = new ArrayList<Integer>();
 			int numOfChunks = ot.getNumOfChunks();
