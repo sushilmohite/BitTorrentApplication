@@ -20,30 +20,38 @@ public class ClientRequestor extends Thread {
 	}
 	
 	public void run() {
-		System.out.println("inside client requestor");
-		List<Integer> chunks = new ArrayList<Integer>();
-		int numOfChunks = ot.getNumOfChunks();
-		
-		for (int i = 0; i < numOfChunks; i++) {
-			if (ot.getChunkStatus(i) == -1) {
-				chunks.add(i);
-			}
-		}
-		
-		Random random = new Random();
-		int chunkNumber = chunks.get(random.nextInt(chunks.size()));
-		
-		try {
-			if (chunkNumber == (numOfChunks - 1)) {
-				requestChunk(chunkNumber, true);
-			} 
-			else {
-				requestChunk(chunkNumber, false);
+		while(!ot.isCompletelyDownloaded()) {
+			System.out.println("inside client requestor");
+			List<Integer> chunks = new ArrayList<Integer>();
+			int numOfChunks = ot.getNumOfChunks();
+			
+			for (int i = 0; i < numOfChunks; i++) {
+				if (ot.getChunkStatus(i) == -1) {
+					chunks.add(i);
+				}
 			}
 			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}		
+			Random random = new Random();
+			int chunkNumber = chunks.get(random.nextInt(chunks.size()));
+			
+			try {
+				if (chunkNumber == (numOfChunks - 1)) {
+					requestChunk(chunkNumber, true);
+				} 
+				else {
+					requestChunk(chunkNumber, false);
+				}
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private void requestChunk(int chunkNumber, boolean isLastChunk) throws IOException {

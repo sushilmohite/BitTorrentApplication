@@ -720,9 +720,9 @@ public class ClientUI {
 	                ot.setDownloaded(chunkNumber, sender);
 	                updateDetailsAndConnectionView(ot);
 	                
-	                if(!ot.isCompletelyDownloaded()) {
+	                /*if(!ot.isCompletelyDownloaded()) {
 	                	downloadNextChunk(ot, sender);
-	                }
+	                }*/
 				}
 			}
 		});
@@ -863,6 +863,7 @@ public class ClientUI {
 	
 	protected void downloadNextChunk(OngoingTorrent ot, String sender) {
 		// Download next chunk
+		// reset timer
 		new ClientRequestor(ot, sender).start();
 	}
 
