@@ -25,17 +25,14 @@ public class ClientListener extends Thread {
 
 		while (true) {
 			try {
-				DatagramSocket socket = null;
-				try {
-					socket = new DatagramSocket(Utility.CLIENT_PORT);
-				} catch (SocketException e) {
-					e.printStackTrace();
-				}
-//				System.out.println("ClientListener: Waiting..");
+				DatagramSocket socket = new DatagramSocket(Utility.CLIENT_PORT);	
 				socket.receive(dataPacket);
 				socket.close();
-				(new HandlePacket(dataPacket)).run();
-			} catch (IOException e) {
+				new HandlePacket(dataPacket).start();
+				
+				sleep(100);
+				
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -46,13 +43,11 @@ public class ClientListener extends Thread {
 		DatagramPacket dataPacket;
 		
 		public HandlePacket(DatagramPacket dataPacket) {
-//			System.out.println("ClientListener: Creating PacketHandler.." + Arrays.toString(Arrays.copyOfRange(dataPacket.getData(), 0 , dataPacket.getLength())));
 			this.dataPacket = dataPacket;
 		}
 		
 		@Override
 		public void run() {
-//			System.out.println("ClientListener: " + Arrays.toString(Arrays.copyOfRange(dataPacket.getData(), 0 , dataPacket.getLength())));
 			switch(this.dataPacket.getData()[0]) {
 			
 			case 1:
@@ -77,10 +72,9 @@ public class ClientListener extends Thread {
 			int chunkNumber = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 1, 5));
 			int chunkSize = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 5, 9));
 			int fileNameSize = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 9, 13));
-			System.out.println(chunkNumber);// + " " + chunkSize + " " + fileNameSize);
+			System.out.println(chunkNumber);
 			String fileName = new String(dataPacket.getData(), 13, fileNameSize);
 			int startPosition = chunkNumber * chunkSize;
-//			System.out.println(chunkNumber + " " + chunkSize + " " + fileName + " " + startPosition);
 			byte[] data = FileHandler.getChunk(fileName, startPosition, chunkSize);
 			
 			if(data == null) {
@@ -89,19 +83,18 @@ public class ClientListener extends Thread {
 			// Create upload packet
 			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 			byteStream.write(2);
-//			byteStream.write(dataPacket.getData(), 1, dataPacket.getData().length - 1);
-//			byteStream.write(new byte[100]);
 			byteStream.write(Utility.intToByteArray(chunkNumber));
 			byteStream.write(Utility.intToByteArray(chunkSize));
 			byteStream.write(Utility.intToByteArray(fileNameSize));
 			byteStream.write(fileName.getBytes());
 			byteStream.write(data);
-//			System.out.println(Arrays.toString(data));
+			
 			byte[] uploadBuffer = byteStream.toByteArray(); 
 			System.out.println("ClientListener: " + Arrays.toString(uploadBuffer));
 			DatagramPacket uploadPacket = new DatagramPacket(uploadBuffer, uploadBuffer.length, /*dataPacket.getAddress()*/InetAddress.getByName("192.168.100.113"), Utility.CLIENT_PORT);
 			
 			DatagramSocket socket = new DatagramSocket(); 
+			
 			// Send upload packet
 			socket.send(uploadPacket);
 			socket.close();
@@ -117,7 +110,6 @@ public class ClientListener extends Thread {
 			byte[] data = Arrays.copyOfRange(dataPacket.getData(), dataOffset, dataPacket.getLength());
 			
 			System.out.println("Writing to file..");
-			System.out.println("ClientListener: " + Arrays.toString(dataPacket.getData()));
 			FileHandler.writeToFile(fileName, startPosition, data);
 			clientUI.updateUI(fileName, dataPacket.getAddress().getHostAddress(), chunkNumber);
 		}
