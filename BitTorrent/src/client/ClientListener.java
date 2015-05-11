@@ -9,18 +9,13 @@ import java.util.Arrays;
 
 public class ClientListener extends Thread {
 	
-	DatagramSocket socket;
 	ClientUI clientUI;
 	
 	public ClientListener(ClientUI clientUI) {
-		try {
-			this.socket = new DatagramSocket(Utility.CLIENT_PORT);
-		} catch (SocketException e) {
-			e.printStackTrace();
-		}
 		this.clientUI = clientUI;
 	}
 	
+	@Override
 	public void run() {
 		
 		// Create resources for incoming data
@@ -30,6 +25,12 @@ public class ClientListener extends Thread {
 		while (true) {
 			try {
 				System.out.println("ClientListener: Waiting..");
+				DatagramSocket socket = null;
+				try {
+					socket = new DatagramSocket(Utility.CLIENT_PORT);
+				} catch (SocketException e) {
+					e.printStackTrace();
+				}
 				socket.receive(dataPacket);
 				(new HandlePacket(dataPacket)).start();
 			} catch (IOException e) {
@@ -43,10 +44,11 @@ public class ClientListener extends Thread {
 		DatagramPacket dataPacket;
 		
 		public HandlePacket(DatagramPacket dataPacket) {
-			System.out.println("ClientListener: Creating PacketHandler.." + dataPacket.getData());
+			System.out.println("ClientListener: Creating PacketHandler.." + Arrays.toString(Arrays.copyOfRange(dataPacket.getData(), 0 , dataPacket.getLength())));
 			this.dataPacket = dataPacket;
 		}
 		
+		@Override
 		public void run() {
 			System.out.println("ClientListener: " + Arrays.toString(Arrays.copyOfRange(dataPacket.getData(), 0 , dataPacket.getLength())));
 			switch(this.dataPacket.getData()[0]) {
@@ -94,8 +96,10 @@ public class ClientListener extends Thread {
 			System.out.println("ClientListener: " + Arrays.toString(uploadBuffer));
 			DatagramPacket uploadPacket = new DatagramPacket(uploadBuffer, uploadBuffer.length, dataPacket.getAddress(), dataPacket.getPort());
 			
+			DatagramSocket socket = new DatagramSocket(); 
 			// Send upload packet
 			socket.send(uploadPacket);
+			socket.close();
 		}
 		
 		private void receivedData() {
