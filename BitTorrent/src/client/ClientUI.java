@@ -730,7 +730,7 @@ public class ClientUI {
 	                if(table.getSelectedRow() == row) {
 	                	updateDetailsAndConnectionView(ot);
 	                }
-	                if(!ot.isCompletelyDownloaded()) {
+	                if(ot.isCompletelyDownloaded()) {
 	                	// Contact tracker
 	                	String[] trackers = ot.getTrackers();
 	                	boolean updatedTracker = false;
@@ -745,7 +745,9 @@ public class ClientUI {
 								out.println(updateTracker);
 								
 								boolean success = (boolean) br.readObject();
-								
+								out.close();
+								br.close();
+								socket.close();
 							} catch (Exception e) {
 								e.printStackTrace();
 							}	                		
