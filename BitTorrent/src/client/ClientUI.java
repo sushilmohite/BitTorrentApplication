@@ -661,7 +661,7 @@ public class ClientUI {
 					chunk.setBackground(Color.WHITE);
 				}
 			} else {
-				if(client.equals(ot.getClient(ot.getChunkStatus(i)))) {
+				if(ot.getChunkStatus(i) != -1 && client.equals(ot.getClient(ot.getChunkStatus(i)))) {
 					chunk.setBackground(Color.BLACK);
 				} else {
 					chunk.setBackground(Color.WHITE);

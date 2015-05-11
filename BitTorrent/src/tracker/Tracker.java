@@ -46,7 +46,6 @@ public class Tracker {
 			@SuppressWarnings("resource")
 			ServerSocket serverSocket = new ServerSocket(PORT);
 			while (true) {
-				System.out.println("Incoming request");
 				new ManageRequest(serverSocket.accept()).start();
 			}
 		} catch (Exception e) {
