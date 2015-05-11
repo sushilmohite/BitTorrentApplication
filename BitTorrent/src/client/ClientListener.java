@@ -109,7 +109,6 @@ public class ClientListener extends Thread {
 			int dataOffset = 13 + fileNameSize;
 			byte[] data = Arrays.copyOfRange(dataPacket.getData(), dataOffset, dataPacket.getLength());
 			
-			System.out.println("Writing to file..");
 			FileHandler.writeToFile(fileName, startPosition, data);
 			clientUI.updateUI(fileName, dataPacket.getAddress().getHostAddress(), chunkNumber);
 		}

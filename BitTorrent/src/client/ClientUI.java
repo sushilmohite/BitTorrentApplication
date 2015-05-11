@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -729,13 +730,30 @@ public class ClientUI {
 	                if(table.getSelectedRow() == row) {
 	                	updateDetailsAndConnectionView(ot);
 	                }
-	                /*if(!ot.isCompletelyDownloaded()) {
-	                	downloadNextChunk(ot, sender);
-	                }*/
+	                if(!ot.isCompletelyDownloaded()) {
+	                	// Contact tracker
+	                	String[] trackers = ot.getTrackers();
+	                	boolean updatedTracker = false;
+	                	
+	                	for (int i = 0; i < trackers.length && !updatedTracker; i++) {
+	                		try {
+								Socket socket = new Socket(trackers[i], Utility.TRACKER_PORT);
+								String updateTracker = "1" + " " + ot.getFileHash() + " " + InetAddress.getLocalHost().getHostAddress() + " " + "true";
+								
+								PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+								ObjectInputStream br = new ObjectInputStream(socket.getInputStream());
+								out.println(updateTracker);
+								
+								boolean success = (boolean) br.readObject();
+								
+							} catch (Exception e) {
+								e.printStackTrace();
+							}	                		
+	                	}
+	                }
 				}
 			}
 		});
-        System.out.println("Updating UI.. sending next request");
 	}
 
 	public void updateDetailsAndConnectionView(final OngoingTorrent ot) {	
