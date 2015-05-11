@@ -870,7 +870,7 @@ public class ClientUI {
 	protected void downloadNextChunk(OngoingTorrent ot, String sender) {
 		// Download next chunk
 		// reset timer
-		new ClientRequestor(this, ot, sender).start();
+		new ClientRequestor(ot, sender).start();
 	}
 
 	public void addTorrent(final OngoingTorrent ot) {
@@ -902,7 +902,7 @@ public class ClientUI {
         table.scrollRectToVisible(rect);
     }
 	
-	public boolean isCompletelyDownloaded(String filename) {
+	/*public boolean isCompletelyDownloaded(String filename) {
 		OngoingTorrent ot = null;
 		for(OngoingTorrent temp : listOfTorrents) {
 			if(temp.getFileName().equals(filename)) {
@@ -932,7 +932,7 @@ public class ClientUI {
 			System.out.println("Ongoing torrent not found!");
 			return -1;
 		}
-	}
+	}*/
 
     public static void setUIFont() {
     	FontUIResource f = new FontUIResource(new Font(Font.SERIF, 0, 20));
