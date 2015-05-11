@@ -2,6 +2,7 @@ package tracker;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -33,10 +34,10 @@ public class Tracker {
 		} catch (UnknownHostException ex) {
 			System.out.println(ex.getMessage());
 		}
-		/*Scanner sc = new Scanner(System.in);
+		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter backup tracker IP");
 		tracker.backupTrackerIP = sc.nextLine();
-		sc.close();*/
+		sc.close();
 		
 		tracker.run();
 	}
@@ -77,14 +78,21 @@ public class Tracker {
 				success = true;
 			}
 
-			/*if (addToBackUp) {
-				Socket backupSocket = new Socket(backupTrackerIP, PORT);
-				PrintWriter out = new PrintWriter(backupSocket.getOutputStream(), true);
-				String paramBackUp = "1" + " " + hashValue + " " + clientIP	+ " " + "false";
-				out.println(paramBackUp);
-				out.close();
-				backupSocket.close();
-			}*/
+			try {
+				if (addToBackUp) {
+					Socket backupSocket = new Socket(backupTrackerIP, PORT);
+					PrintWriter out = new PrintWriter(backupSocket.getOutputStream(), true);
+					ObjectInputStream br = new ObjectInputStream(socket.getInputStream());
+					String paramBackUp = "1" + " " + hashValue + " " + clientIP	+ " " + "false";
+					out.println(paramBackUp);
+					System.out.println(br.readObject());
+					br.close();
+					out.close();
+					backupSocket.close();
+				}
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
 
 			return success;
 		}
