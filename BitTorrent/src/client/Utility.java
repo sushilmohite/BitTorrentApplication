@@ -66,5 +66,6 @@ public class Utility {
 		System.out.println(MB);
 		System.out.println(GB);
 		System.out.println(REQUEST);
+		System.out.println(FileHandler.getHash("AahunAahun.mp3"));
 	}
 }

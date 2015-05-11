@@ -31,7 +31,7 @@ public class ClientListener extends Thread {
 				} catch (SocketException e) {
 					e.printStackTrace();
 				}
-				System.out.println("ClientListener: Waiting..");
+//				System.out.println("ClientListener: Waiting..");
 				socket.receive(dataPacket);
 				socket.close();
 				(new HandlePacket(dataPacket)).run();
@@ -46,13 +46,13 @@ public class ClientListener extends Thread {
 		DatagramPacket dataPacket;
 		
 		public HandlePacket(DatagramPacket dataPacket) {
-			System.out.println("ClientListener: Creating PacketHandler.." + Arrays.toString(Arrays.copyOfRange(dataPacket.getData(), 0 , dataPacket.getLength())));
+//			System.out.println("ClientListener: Creating PacketHandler.." + Arrays.toString(Arrays.copyOfRange(dataPacket.getData(), 0 , dataPacket.getLength())));
 			this.dataPacket = dataPacket;
 		}
 		
 		@Override
 		public void run() {
-			System.out.println("ClientListener: " + Arrays.toString(Arrays.copyOfRange(dataPacket.getData(), 0 , dataPacket.getLength())));
+//			System.out.println("ClientListener: " + Arrays.toString(Arrays.copyOfRange(dataPacket.getData(), 0 , dataPacket.getLength())));
 			switch(this.dataPacket.getData()[0]) {
 			
 			case 1:
@@ -77,7 +77,7 @@ public class ClientListener extends Thread {
 			int chunkNumber = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 1, 5));
 			int chunkSize = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 5, 9));
 			int fileNameSize = Utility.byteArrayToInt(Arrays.copyOfRange(dataPacket.getData(), 9, 13));
-			System.out.println(chunkNumber);// + " " + chunkSize + " " + fileNameSize);
+			System.out.print(chunkNumber + " ");// + " " + chunkSize + " " + fileNameSize);
 			String fileName = new String(dataPacket.getData(), 13, fileNameSize);
 			int startPosition = chunkNumber * chunkSize;
 //			System.out.println(chunkNumber + " " + chunkSize + " " + fileName + " " + startPosition);
