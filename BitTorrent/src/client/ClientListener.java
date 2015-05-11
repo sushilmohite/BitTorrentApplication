@@ -98,7 +98,7 @@ public class ClientListener extends Thread {
 			byteStream.write(data);
 //			System.out.println(Arrays.toString(data));
 			byte[] uploadBuffer = byteStream.toByteArray(); 
-//			System.out.println("ClientListener: " + Arrays.toString(uploadBuffer));
+			System.out.println("ClientListener: " + Arrays.toString(uploadBuffer));
 			DatagramPacket uploadPacket = new DatagramPacket(uploadBuffer, uploadBuffer.length, /*dataPacket.getAddress()*/InetAddress.getByName("192.168.100.113"), Utility.CLIENT_PORT);
 			
 			DatagramSocket socket = new DatagramSocket(); 
@@ -117,6 +117,7 @@ public class ClientListener extends Thread {
 			byte[] data = Arrays.copyOfRange(dataPacket.getData(), dataOffset, dataPacket.getLength() - 1);
 			
 			System.out.println("Writing to file..");
+			System.out.println("ClientListener: " + Arrays.toString(dataPacket.getData()));
 			FileHandler.writeToFile(fileName, startPosition, data);
 			clientUI.updateUI(fileName, dataPacket.getAddress().getHostAddress(), chunkNumber);
 		}
