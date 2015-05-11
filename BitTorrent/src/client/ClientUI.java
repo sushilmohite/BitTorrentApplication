@@ -719,7 +719,10 @@ public class ClientUI {
 
 	                ot.setDownloaded(chunkNumber, sender);
 	                updateDetailsAndConnectionView(ot);
-	        		downloadNextChunk(ot, sender);
+	                
+	                if(!ot.isCompletelyDownloaded()) {
+	                	downloadNextChunk(ot, sender);
+	                }
 				}
 			}
 		});
