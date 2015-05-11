@@ -724,10 +724,7 @@ public class ClientUI {
 	                jFrame.validate();
 	                jFrame.repaint();
 
-	                ot.setDownloaded(chunkNumber, sender);
-	                
-	                listOfTorrents.set(index, ot);
-	                updateDetailsAndConnectionView(ot);
+	                listOfTorrents.get(index).setDownloaded(chunkNumber, sender);
 	                
 	                /*if(!ot.isCompletelyDownloaded()) {
 	                	downloadNextChunk(ot, sender);
