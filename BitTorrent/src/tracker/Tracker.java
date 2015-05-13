@@ -34,10 +34,10 @@ public class Tracker {
 		} catch (UnknownHostException ex) {
 			System.out.println(ex.getMessage());
 		}
-		Scanner sc = new Scanner(System.in);
+		/*Scanner sc = new Scanner(System.in);
 		System.out.println("Enter backup tracker IP");
 		tracker.backupTrackerIP = sc.nextLine();
-		sc.close();
+		sc.close();*/
 		
 		tracker.run();
 	}
@@ -78,7 +78,7 @@ public class Tracker {
 				success = true;
 			}
 
-			try {
+			/*try {
 				if (addToBackUp) {
 					Socket backupSocket = new Socket(backupTrackerIP, PORT);
 					PrintWriter out = new PrintWriter(backupSocket.getOutputStream(), true);
@@ -92,7 +92,7 @@ public class Tracker {
 				}
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
-			}
+			}*/
 
 			return success;
 		}
@@ -110,7 +110,7 @@ public class Tracker {
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 				String input = br.readLine();
-				//System.out.println(input);
+				System.out.println("Incoming Request");
 				String[] params = input.split(" ");
 			
 				switch (Integer.parseInt(params[0])) {
