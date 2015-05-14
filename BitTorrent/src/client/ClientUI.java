@@ -944,9 +944,20 @@ public class ClientUI {
         }
     }
     
+	public static void printUsage() {
+		System.out.println("Usage:");
+		System.out.println("    java client.ClientUI <YourName>");
+		System.out.println();
+		System.out.println(" <YourName> : Name to display greeting to.");
+	}
+	
 	public static void main(String[] args) {
-		ClientUI c = new ClientUI(args[0]);
-		new ClientListener(c).start();
+		if(args.length == 1) {
+			ClientUI c = new ClientUI(args[0]);
+			new ClientListener(c).start();
+		} else {
+			printUsage();
+		}
 	}
 
 }
