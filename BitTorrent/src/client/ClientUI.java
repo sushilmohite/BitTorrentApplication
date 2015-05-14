@@ -294,18 +294,20 @@ public class ClientUI {
 		File torrentFile = jfc.getSelectedFile();
 		
 		Torrent t = null;
-		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(torrentFile));
-			t = (Torrent) ois.readObject();
-			ois.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (StreamCorruptedException e) {
-			JOptionPane.showMessageDialog(null, "Invalid file! Please use proper *.torrent file");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+		if(torrentFile != null) {
+			try {
+				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(torrentFile));
+				t = (Torrent) ois.readObject();
+				ois.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (StreamCorruptedException e) {
+				JOptionPane.showMessageDialog(null, "Invalid file! Please use proper *.torrent file");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		if(t != null) {
